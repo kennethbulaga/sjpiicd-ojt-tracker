@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# agent / editor config (local-only, not shared via repo)
+.agents/
+.cursor/
+
+docs/
