@@ -59,8 +59,8 @@ export function Sidebar() {
                 // items use "text-muted-foreground" with hover states that
                 // preview the accent color, guiding the user's interaction.
                 isActive
-                  ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                  ? "bg-accent text-foreground border-l-2 border-primary font-semibold"
+                  : "text-muted-foreground hover:bg-accent hover:text-accent-foreground border-l-2 border-transparent"
               )}
             >
               <Icon className="size-5" />

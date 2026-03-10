@@ -6,6 +6,8 @@
 import { createClient } from "@/lib/supabase/server"
 import { ThemeToggle } from "@/components/layout/ThemeToggle"
 import { UserMenu } from "@/components/layout/UserMenu"
+import { PageTitle } from "@/components/layout/PageTitle"
+import { NavigationProgress } from "@/components/layout/NavigationProgress"
 
 export async function Header() {
   // Note 2: Fetch the authenticated user from Supabase using getUser().
@@ -38,23 +40,17 @@ export async function Header() {
     // the header is 95% opaque with a backdrop blur, so content scrolling
     // beneath is subtly visible. The supports-[backdrop-filter] fallback
     // uses 60% opacity only when the browser supports backdrop-filter.
-    <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 relative">
       {/* Note 5: "h-14" (56px) matches the Material Design app bar height.
           This provides sufficient vertical space for touch targets while
           keeping the header compact. "justify-between" spaces the logo
           and actions to opposite ends of the header. */}
       <div className="flex h-14 items-center justify-between px-4 md:px-6">
-        {/* Note 6: "JP Track" heading is shown on mobile (where the sidebar
-            logo is hidden). On desktop, the sidebar already shows the logo,
-            so this serves as a secondary brand marker. Using "md:hidden" to
-            hide it on desktop would be an option, but keeping it visible
-            provides consistent branding across breakpoints. */}
+        {/* Mobile: show app name since sidebar is hidden */}
         <h1 className="text-lg font-semibold md:hidden">JP Track</h1>
 
-        {/* Note 7: Spacer div on desktop — pushes the action buttons to the
-            right edge when the sidebar logo is already visible. On mobile,
-            the h1 above handles the left side. */}
-        <div className="hidden md:block" />
+        {/* Desktop: show current page title */}
+        <PageTitle />
 
         {/* Note 8: Action buttons group — ThemeToggle and UserMenu. "gap-2"
             adds 8px spacing between them. Both are Client Components that
@@ -71,6 +67,7 @@ export async function Header() {
           )}
         </div>
       </div>
+      <NavigationProgress />
     </header>
   )
 }
