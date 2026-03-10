@@ -1,20 +1,72 @@
-// Note 1: This Server Component page renders the DTR (Daily Time Record) history
-// at the "/history" route. It displays all logged OJT time entries in a table
-// format with sorting, filtering, and export capabilities.
+import { redirect } from "next/navigation"
+import { Suspense } from "react"
 
-// Note 2: Because this is a Server Component, the time_entries query runs on
-// the server. The fetched data is serialized and sent to the client as HTML.
-// This means the database credentials never leave the server, and the initial
-// page load includes all the data — no loading spinner for the first render.
-export default function HistoryPage() {
+import { createClient } from "@/lib/supabase/server"
+import { DTRTable } from "@/components/history/DTRTable"
+import { ExportActions } from "@/components/history/ExportActions"
+
+export const metadata = {
+  title: "DTR History — JP Track",
+}
+
+export default async function HistoryPage() {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect("/")
+  }
+
+  // Fetch all time entries for the current user, ordered by date descending
+  const { data: entries, error } = await supabase
+    .from("time_entries")
+    .select(
+      "id, date_logged, time_in, time_out, total_minutes, session_type, task_description, created_at"
+    )
+    .eq("user_id", user.id)
+    .order("date_logged", { ascending: false })
+    .order("time_in", { ascending: false })
+
+  if (error) {
+    console.error("Error fetching time entries:", error)
+  }
+
+  const safeEntries = entries ?? []
+
+  // Calculate summary stats
+  const totalMinutes = safeEntries.reduce(
+    (sum, e) => sum + (e.total_minutes ?? 0),
+    0
+  )
+  const totalHours = totalMinutes / 60
+
   return (
-    <div className="p-4 md:p-6 lg:p-8">
-      <h1 className="text-2xl font-bold">DTR History</h1>
-      {/* Note 3: Two components will be placed here:
-          - DTRTable: Renders time entries using shadcn's Table component,
-            grouped by date_logged, with pagination and descending sort.
-          - ExportActions: Client Component with CSV export (via Blob API)
-            and future PDF export support. */}
+    <div className="mx-auto max-w-5xl space-y-6 p-4 md:p-6 lg:p-8">
+      {/* Header with summary and export */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">DTR History</h1>
+          <p className="text-sm text-muted-foreground">
+            {safeEntries.length} entries · {totalHours.toFixed(1)} total hours
+          </p>
+        </div>
+        <ExportActions entries={safeEntries} />
+      </div>
+
+      {/* DTR Table */}
+      <Suspense
+        fallback={
+          <div className="animate-pulse space-y-4">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="h-16 rounded-lg bg-muted" />
+            ))}
+          </div>
+        }
+      >
+        <DTRTable entries={safeEntries} />
+      </Suspense>
     </div>
   )
 }
