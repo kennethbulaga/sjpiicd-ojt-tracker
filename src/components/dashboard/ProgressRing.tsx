@@ -1,47 +1,87 @@
-// Note 1: "use client" marks this as a Client Component. It's needed here
-// because the ProgressRing may use browser APIs for SVG animations or
-// interactivity (e.g., hover tooltips). Client Components are sent as
-// JavaScript bundles to the browser and hydrated for interactivity.
 "use client"
 
-// Note 2: TypeScript interfaces define the shape of component props.
-// This provides compile-time type checking — if the parent passes a string
-// where a number is expected, TypeScript catches it before runtime.
+import { cn } from "@/lib/utils"
+
 interface ProgressRingProps {
   hoursCompleted: number
   targetHours: number
 }
 
-// Note 3: Named exports (not default) are used for feature components.
-// This makes imports more explicit: import { ProgressRing } from "..."
-// Default exports are reserved for pages/layouts (Next.js convention).
 export function ProgressRing({ hoursCompleted, targetHours }: ProgressRingProps) {
-  // Note 4: Math.min caps the percentage at 100% to prevent visual overflow
-  // when a student logs more hours than their target (which is allowed).
   const percentage = Math.min(100, (hoursCompleted / targetHours) * 100)
-  // Note 5: Math.max ensures "remaining" never goes negative. When
-  // hoursCompleted exceeds targetHours, this displays "0.0h remaining"
-  // instead of a confusing negative number.
   const hoursRemaining = Math.max(0, targetHours - hoursCompleted)
 
+  // SVG circle math
+  const size = 192 // matches size-48
+  const strokeWidth = 12
+  const radius = (size - strokeWidth) / 2
+  const circumference = 2 * Math.PI * radius
+  const strokeDashoffset = circumference - (percentage / 100) * circumference
+
+  // Color changes based on progress
+  const progressColor =
+    percentage >= 100
+      ? "stroke-green-500 dark:stroke-green-400"
+      : "stroke-primary"
+
   return (
-    <div className="flex flex-col items-center">
-      {/* Note 6: This placeholder will be replaced with an SVG-based ring.
-          The SVG approach uses a <circle> element with stroke-dasharray
-          and stroke-dashoffset to create the animated progress arc.
-          "size-48" (192px) provides a large, readable visualization
-          that works as the dashboard's visual centerpiece. */}
-      <div className="relative flex size-48 items-center justify-center rounded-full border-8 border-muted">
-        <div className="text-center">
-          {/* Note 7: toFixed(1) formats the number to one decimal place.
-              This prevents long floating-point numbers like "66.66666..."
-              from breaking the layout. */}
-          <p className="text-3xl font-bold">{percentage.toFixed(1)}%</p>
+    <div className="flex flex-col items-center gap-4">
+      {/* SVG Progress Ring */}
+      <div className="relative">
+        <svg
+          width={size}
+          height={size}
+          viewBox={`0 0 ${size} ${size}`}
+          className="-rotate-90"
+          aria-label={`${percentage.toFixed(1)}% OJT progress`}
+          role="img"
+        >
+          {/* Background track */}
+          <circle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            fill="none"
+            strokeWidth={strokeWidth}
+            className="stroke-muted"
+          />
+          {/* Progress arc */}
+          <circle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            fill="none"
+            strokeWidth={strokeWidth}
+            strokeLinecap="round"
+            strokeDasharray={circumference}
+            strokeDashoffset={strokeDashoffset}
+            className={cn(
+              "transition-[stroke-dashoffset] duration-700 ease-out",
+              progressColor
+            )}
+          />
+        </svg>
+
+        {/* Center text overlay */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+          <p className="text-3xl font-bold tracking-tight">
+            {percentage >= 100 ? "100" : percentage.toFixed(1)}%
+          </p>
           <p className="text-sm text-muted-foreground">
-            {hoursRemaining.toFixed(1)}h remaining
+            {hoursRemaining > 0
+              ? `${hoursRemaining.toFixed(1)}h left`
+              : "Complete!"}
           </p>
         </div>
       </div>
+
+      {/* Hours label */}
+      <p className="text-sm text-muted-foreground">
+        <span className="font-semibold text-foreground">
+          {hoursCompleted.toFixed(1)}
+        </span>{" "}
+        / {targetHours} hours
+      </p>
     </div>
   )
 }

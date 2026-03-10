@@ -1,27 +1,137 @@
-// Note 1: This Server Component page is the main dashboard view at "/dashboard".
-// As a Server Component, it can directly fetch data from Supabase on the server
-// (using the server client) before rendering — no useEffect or loading spinners
-// needed for the initial data. This pattern is called "server-side data fetching"
-// and results in faster, SEO-friendly page loads.
+import { redirect } from "next/navigation"
+import { format } from "date-fns"
+import { Suspense } from "react"
+import Link from "next/link"
+import { Plus } from "lucide-react"
 
-// Note 2: In a production implementation, this page will:
-// 1. Fetch the user's total minutes from Supabase via the server client
-// 2. Pass the data as props to ProgressRing and StatsCards (Client Components)
-// This "fetch on server, render on client" pattern keeps data fetching secure
-// (API keys never reach the browser) while allowing interactive UI.
-export default function DashboardPage() {
+import { createClient } from "@/lib/supabase/server"
+import { ProgressRing } from "@/components/dashboard/ProgressRing"
+import { StatsCards } from "@/components/dashboard/StatsCards"
+import { RecentEntries } from "@/components/time-entry/RecentEntries"
+import { Button } from "@/components/ui/button"
+
+export const metadata = {
+  title: "Dashboard — JP Track",
+}
+
+export default async function DashboardPage() {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect("/")
+  }
+
+  // Fetch user profile for target_hours
+  const { data: profile } = await supabase
+    .from("users")
+    .select("target_hours, full_name")
+    .eq("id", user.id)
+    .single()
+
+  const targetHours = profile?.target_hours ?? 486
+
+  // Fetch total minutes from all time entries
+  const { data: entries } = await supabase
+    .from("time_entries")
+    .select("total_minutes, date_logged")
+    .eq("user_id", user.id)
+
+  const totalMinutes = entries?.reduce((sum, e) => sum + (e.total_minutes ?? 0), 0) ?? 0
+  const hoursCompleted = totalMinutes / 60
+  const totalEntries = entries?.length ?? 0
+
+  // Today's minutes
+  const today = format(new Date(), "yyyy-MM-dd")
+  const todayMinutes =
+    entries
+      ?.filter((e) => e.date_logged === today)
+      .reduce((sum, e) => sum + (e.total_minutes ?? 0), 0) ?? 0
+
+  // Greeting
+  const firstName =
+    profile?.full_name?.split(" ")[0] ??
+    user.user_metadata?.full_name?.split(" ")[0] ??
+    "Student"
+
+  const hour = new Date().getHours()
+  const greeting =
+    hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening"
+
   return (
-    // Note 3: The responsive padding pattern "p-4 md:p-6 lg:p-8" provides
-    // tighter spacing on mobile (16px), medium on tablets (24px), and generous
-    // on desktops (32px). This is a mobile-first approach — the base style
-    // targets the smallest screen, and breakpoint modifiers add space as
-    // viewport width increases.
-    <div className="p-4 md:p-6 lg:p-8">
-      <h1 className="text-2xl font-bold">Dashboard</h1>
-      {/* Note 4: ProgressRing and StatsCards will be imported here.
-          Both are Client Components ("use client") because they need
-          interactivity or browser APIs. They receive data as props
-          from this Server Component parent. */}
+    <div className="mx-auto max-w-5xl space-y-6 p-4 md:p-6 lg:p-8">
+      {/* Header with greeting + CTA */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">
+            {greeting}, {firstName}!
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Here&apos;s your OJT progress overview.
+          </p>
+        </div>
+        <Button asChild className="min-h-[44px]">
+          <Link href="/log">
+            <Plus className="mr-2 size-4" />
+            Log Hours
+          </Link>
+        </Button>
+      </div>
+
+      {/* Progress Ring + Stats */}
+      <div className="space-y-6">
+        {/* Top row: Progress Ring centered on mobile, left-aligned on desktop with stats beside it */}
+        <div className="flex flex-col items-center gap-6 lg:flex-row lg:items-start">
+          <div className="flex shrink-0 items-center justify-center rounded-xl border bg-card p-6 shadow-sm">
+            <ProgressRing
+              hoursCompleted={hoursCompleted}
+              targetHours={targetHours}
+            />
+          </div>
+
+          {/* Stats Cards — full width, all 4 in a single row on lg */}
+          <div className="w-full flex-1">
+            <StatsCards
+              hoursCompleted={hoursCompleted}
+              targetHours={targetHours}
+              totalEntries={totalEntries}
+              todayMinutes={todayMinutes}
+            />
+          </div>
+        </div>
+
+        {/* Quick actions for mobile */}
+        <div className="grid grid-cols-2 gap-3 lg:hidden">
+          <Button variant="outline" className="min-h-[44px]" asChild>
+            <Link href="/history">View History</Link>
+          </Button>
+          <Button variant="outline" className="min-h-[44px]" asChild>
+            <Link href="/settings">Settings</Link>
+          </Button>
+        </div>
+      </div>
+
+      {/* Recent Entries (reuse from /log page) */}
+      <Suspense
+        fallback={
+          <div className="animate-pulse rounded-xl border bg-card p-6 shadow-sm space-y-4">
+            <div className="h-6 w-32 rounded-md bg-muted" />
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="rounded-lg border p-3 space-y-2">
+                <div className="flex gap-2">
+                  <div className="h-4 w-24 rounded bg-muted" />
+                  <div className="h-5 w-16 rounded-full bg-muted" />
+                </div>
+                <div className="h-4 w-40 rounded bg-muted" />
+              </div>
+            ))}
+          </div>
+        }
+      >
+        <RecentEntries />
+      </Suspense>
     </div>
   )
 }

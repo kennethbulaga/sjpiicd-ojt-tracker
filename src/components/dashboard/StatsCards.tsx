@@ -1,76 +1,67 @@
-// Note 1: Importing from "@/components/ui/card" uses the path alias "@/"
-// which maps to "src/" (configured in tsconfig.json). This is cleaner than
-// relative paths like "../../../components/ui/card" and makes imports
-// consistent regardless of file depth in the folder structure.
+import { Clock, CalendarCheck, Target, TrendingUp } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
-// Note 2: The interface defines exactly what data this component needs.
-// By accepting pre-calculated values as props (instead of raw time entries),
-// this component stays "dumb" — it only renders, doesn't compute.
-// The parent (Server Component) or a hook handles the calculations.
 interface StatsCardsProps {
   hoursCompleted: number
   targetHours: number
   totalEntries: number
+  todayMinutes: number
 }
 
-// Note 3: Destructuring props in the function signature is a TypeScript/React
-// best practice. It makes it immediately clear what data the component uses,
-// and each prop can be used directly without "props.hoursCompleted" syntax.
 export function StatsCards({
   hoursCompleted,
   targetHours,
   totalEntries,
+  todayMinutes,
 }: StatsCardsProps) {
   const hoursRemaining = Math.max(0, targetHours - hoursCompleted)
+  const todayHours = todayMinutes / 60
+
+  const stats = [
+    {
+      label: "Hours Completed",
+      value: hoursCompleted.toFixed(1),
+      icon: Clock,
+      description: "Total logged hours",
+    },
+    {
+      label: "Hours Remaining",
+      value: hoursRemaining.toFixed(1),
+      icon: Target,
+      description: `of ${targetHours}h target`,
+    },
+    {
+      label: "Total Entries",
+      value: totalEntries.toString(),
+      icon: CalendarCheck,
+      description: "Time logs recorded",
+    },
+    {
+      label: "Today",
+      value: todayHours > 0 ? `${todayHours.toFixed(1)}h` : "—",
+      icon: TrendingUp,
+      description: todayHours > 0 ? "Hours logged today" : "No entries today",
+    },
+  ] as const
 
   return (
-    // Note 4: This responsive grid is a mobile-first pattern:
-    // - Mobile (default): 1 column — cards stack vertically
-    // - Tablet (sm: 640px+): 2 columns — side by side
-    // - Desktop (lg: 1024px+): 3 columns — all cards visible at once
-    // "gap-4" (16px) provides consistent spacing between cards.
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      {/* Note 5: The shadcn Card component is a pre-styled container with
-          proper border, background, and shadow tokens. It automatically
-          adapts to light/dark themes via the semantic color variables
-          defined in globals.css (--color-card, --color-card-foreground). */}
-      <Card>
-        <CardHeader className="pb-2">
-          {/* Note 6: "text-sm font-medium text-muted-foreground" creates a
-              subtle label above the main value. "muted-foreground" is a
-              semantic token for secondary text — it's readable but doesn't
-              compete with the primary value for visual attention. */}
-          <CardTitle className="text-sm font-medium text-muted-foreground">
-            Hours Completed
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-2xl font-bold">{hoursCompleted.toFixed(1)}</p>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium text-muted-foreground">
-            Hours Remaining
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-2xl font-bold">{hoursRemaining.toFixed(1)}</p>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium text-muted-foreground">
-            Total Entries
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-2xl font-bold">{totalEntries}</p>
-        </CardContent>
-      </Card>
+    <div className="grid grid-cols-2 gap-3">
+      {stats.map((stat) => (
+        <Card key={stat.label} className="rounded-xl shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-xs font-medium text-muted-foreground sm:text-sm">
+              {stat.label}
+            </CardTitle>
+            <stat.icon className="size-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <p className="text-xl font-bold sm:text-2xl">{stat.value}</p>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              {stat.description}
+            </p>
+          </CardContent>
+        </Card>
+      ))}
     </div>
   )
 }
