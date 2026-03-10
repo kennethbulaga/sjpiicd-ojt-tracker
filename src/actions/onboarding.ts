@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
-import { onboardingSchema } from "@/lib/validations/onboarding"
+import { onboardingServerSchema } from "@/lib/validations/onboarding"
 
 // typescript-best-practices: Discriminated union for typed Server Action returns.
 // Makes illegal states unrepresentable — caller must handle both success and error.
@@ -52,7 +52,8 @@ export async function completeOnboarding(formData: FormData): Promise<ActionResu
   }
 
   // zod: safeParse for user input (parse-use-safeparse), flatten for form errors (error-use-flatten)
-  const result = onboardingSchema.safeParse(raw)
+  // Uses onboardingServerSchema (with z.coerce) because FormData values are strings.
+  const result = onboardingServerSchema.safeParse(raw)
   if (!result.success) {
     return { error: result.error.flatten().fieldErrors }
   }
