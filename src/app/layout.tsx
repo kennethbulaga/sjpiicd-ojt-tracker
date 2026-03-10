@@ -31,12 +31,48 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 })
 
-// Note 5: The metadata export is a Next.js convention for setting <head> tags.
+// Note 5: metadataBase resolves relative OG image paths to absolute URLs.
+// VERCEL_URL is auto-injected by Vercel at build time (no NEXT_PUBLIC_ needed
+// because metadata is evaluated server-side only). Falls back to localhost
+// for local development.
+const siteUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL
+  ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+  : "http://localhost:3000"
+
+// Note 6: The metadata export is a Next.js convention for setting <head> tags.
 // This object is statically analyzable, so Next.js can optimize it at build time.
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: "JP Track — SJPIICD OJT Hour Tracker",
   description:
     "Track and manage your On-the-Job Training hours for St. John Paul II College of Davao.",
+
+  // Open Graph — used by Facebook, LinkedIn, Discord, and other platforms
+  // that render link previews when the URL is shared.
+  openGraph: {
+    type: "website",
+    siteName: "JP Track",
+    title: "JP Track — SJPIICD OJT Hour Tracker",
+    description:
+      "A dedicated tool for efficient internship management. Track hours, monitor progress, and export DTR records.",
+    images: [
+      {
+        url: "/system-open-graph.png",
+        width: 1200,
+        height: 630,
+        alt: "St. John Paul II College of Davao — OJT Tracker System",
+      },
+    ],
+  },
+
+  // Twitter (X) — uses summary_large_image for a prominent image preview.
+  twitter: {
+    card: "summary_large_image",
+    title: "JP Track — SJPIICD OJT Hour Tracker",
+    description:
+      "A dedicated tool for efficient internship management. Track hours, monitor progress, and export DTR records.",
+    images: ["/system-open-graph.png"],
+  },
 }
 
 export default function RootLayout({
