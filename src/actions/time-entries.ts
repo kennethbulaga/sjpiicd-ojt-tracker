@@ -16,7 +16,7 @@ import { timeEntrySchema } from "@/lib/validations/time-entry"
 // Note 4: date-fns provides reliable date/time math. differenceInMinutes
 // calculates the exact gap between two times, and parse() converts time
 // strings ("08:00:00") into Date objects for the calculation.
-import { differenceInMinutes, parse } from "date-fns"
+import { differenceInMinutes, format, parse } from "date-fns"
 
 // Note 5: Server Actions receive FormData when called from a <form> element
 // with the "action" attribute. FormData is a web standard that represents
@@ -61,8 +61,34 @@ export async function createTimeEntry(formData: FormData) {
     return { error: result.error.flatten().fieldErrors }
   }
 
-  // Note 11: Destructuring separates time values (needed for calculation)
-  // from the rest of the validated data (inserted directly into the database).
+  // Future time validation: if the entry is for today, time_out cannot be
+  // in the future. This prevents students from logging hours they haven't
+  // worked yet (e.g., logging 3PM-5PM when it's only 2PM).
+  const now = new Date()
+  const todayStr = format(now, "yyyy-MM-dd")
+  const currentTimeStr = format(now, "HH:mm:ss")
+
+  if (result.data.date_logged === todayStr) {
+    if (result.data.time_out > currentTimeStr) {
+      return {
+        error: {
+          time_out: [
+            `Time Out cannot be in the future. Current time is ${format(now, "h:mm a")}.`,
+          ],
+        },
+      }
+    }
+    if (result.data.time_in > currentTimeStr) {
+      return {
+        error: {
+          time_in: [
+            `Time In cannot be in the future. Current time is ${format(now, "h:mm a")}.`,
+          ],
+        },
+      }
+    }
+  }
+
   const { time_in, time_out, ...rest } = result.data
   // Note 12: parse() converts time strings to Date objects using a format
   // pattern. The base date (new Date()) doesn't matter because we only
@@ -89,11 +115,9 @@ export async function createTimeEntry(formData: FormData) {
     return { error: error.message }
   }
 
-  // Note 15: revalidatePath purges the cached data for these routes.
-  // The next time a user visits /dashboard or /history, Next.js will
-  // re-run the Server Component and fetch fresh data from Supabase.
   revalidatePath("/dashboard")
   revalidatePath("/history")
+  revalidatePath("/log")
   return { success: true }
 }
 
@@ -124,5 +148,6 @@ export async function deleteTimeEntry(entryId: string) {
 
   revalidatePath("/dashboard")
   revalidatePath("/history")
+  revalidatePath("/log")
   return { success: true }
 }

@@ -1,31 +1,306 @@
-// Note 1: "use client" is required because this component uses interactive
-// form elements, React Hook Form state management, and event handlers —
-// all of which need JavaScript in the browser to function.
 "use client"
 
-// Note 2: The QuickLogForm is the primary data entry component for the OJT
-// tracker. It implements the "Timesheet Mode" pattern — a calendar-based
-// rapid entry form that lets students log hours for any date (past or present).
-// This is more flexible than a live timer because students can retroactively
-// log hours they forgot to track in real-time.
+import { useTransition } from "react"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { format } from "date-fns"
+import { CalendarIcon, Clock, Loader2 } from "lucide-react"
+import { toast } from "sonner"
+
+import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
+import { Calendar } from "@/components/ui/calendar"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+
+import { createTimeEntry } from "@/actions/time-entries"
+import {
+  timeEntrySchema,
+  sessionTypes,
+  type TimeEntryInput,
+} from "@/lib/validations/time-entry"
+import { SMART_DEFAULTS } from "@/lib/constants"
+
 export function QuickLogForm() {
-  // Note 3: The full implementation will include:
-  // - React Hook Form with zodResolver for client-side validation
-  // - The timeEntrySchema from src/lib/validations/time-entry.ts
-  // - Smart defaults from SMART_DEFAULTS constant (8AM-12PM morning,
-  //   1PM-5PM afternoon) to speed up data entry
-  // - Server Action submission via the createTimeEntry action
-  // - Sonner toast notifications for success/error feedback
+  const [isPending, startTransition] = useTransition()
+
+  const form = useForm<TimeEntryInput>({
+    resolver: zodResolver(timeEntrySchema),
+    defaultValues: {
+      date_logged: format(new Date(), "yyyy-MM-dd"),
+      time_in: SMART_DEFAULTS.MORNING.time_in + ":00",
+      time_out: SMART_DEFAULTS.MORNING.time_out + ":00",
+      session_type: "Morning",
+      task_description: "",
+    },
+  })
+
+  // Apply smart defaults when session type changes
+  function handleSessionTypeChange(value: string) {
+    form.setValue("session_type", value as TimeEntryInput["session_type"])
+
+    if (value === "Morning") {
+      form.setValue("time_in", SMART_DEFAULTS.MORNING.time_in + ":00")
+      form.setValue("time_out", SMART_DEFAULTS.MORNING.time_out + ":00")
+    } else if (value === "Afternoon") {
+      form.setValue("time_in", SMART_DEFAULTS.AFTERNOON.time_in + ":00")
+      form.setValue("time_out", SMART_DEFAULTS.AFTERNOON.time_out + ":00")
+    }
+    // Overtime: keep current times (user decides)
+  }
+
+  function onSubmit(data: TimeEntryInput) {
+    startTransition(async () => {
+      const formData = new FormData()
+      formData.set("date_logged", data.date_logged)
+      formData.set("time_in", data.time_in)
+      formData.set("time_out", data.time_out)
+      formData.set("session_type", data.session_type)
+      if (data.task_description) {
+        formData.set("task_description", data.task_description)
+      }
+
+      const result = await createTimeEntry(formData)
+
+      if (result && "error" in result) {
+        if (typeof result.error === "string") {
+          toast.error("Failed to log entry", { description: result.error })
+        } else {
+          // Field-level errors from Zod
+          const errors = result.error as Record<string, string[] | undefined>
+          Object.entries(errors).forEach(([field, messages]) => {
+            if (messages?.[0]) {
+              form.setError(field as keyof TimeEntryInput, {
+                type: "server",
+                message: messages[0],
+              })
+            }
+          })
+          toast.error("Please fix the errors in the form.")
+        }
+        return
+      }
+
+      toast.success("Hours logged!", {
+        description: `${data.session_type} session on ${format(new Date(data.date_logged + "T00:00:00"), "MMM d, yyyy")}`,
+      })
+
+      // Reset form but keep the date and session type for quick re-entry
+      form.reset({
+        date_logged: data.date_logged,
+        time_in: data.time_in,
+        time_out: data.time_out,
+        session_type: data.session_type,
+        task_description: "",
+      })
+    })
+  }
+
   return (
-    <div>
-      {/* Note 4: The form will contain these interactive elements:
-          - shadcn Calendar: Date picker for selecting the OJT date
-          - Time pickers: time_in and time_out with the 7AM-9PM constraint
-          - Session type selector: Morning/Afternoon/Overtime enum
-          - Task description: Optional textarea (max 500 characters)
-          - Submit button: Triggers the createTimeEntry Server Action
-          All fields are validated by Zod before submission. */}
-      <p className="text-muted-foreground">Quick Log form placeholder</p>
-    </div>
+    <Card className="rounded-xl shadow-sm">
+      <CardHeader className="pb-4">
+        <CardTitle className="flex items-center gap-2 text-lg">
+          <Clock className="size-5 text-primary" />
+          Quick Log
+        </CardTitle>
+      </CardHeader>
+
+      <CardContent>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+            {/* Date Picker */}
+            <FormField
+              control={form.control}
+              name="date_logged"
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>Date</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full min-h-[44px] justify-start text-left font-normal",
+                            !field.value && "text-muted-foreground"
+                          )}
+                        >
+                          <CalendarIcon className="mr-2 size-4" />
+                          {field.value
+                            ? format(
+                                new Date(field.value + "T00:00:00"),
+                                "EEEE, MMMM d, yyyy"
+                              )
+                            : "Pick a date"}
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={
+                          field.value
+                            ? new Date(field.value + "T00:00:00")
+                            : undefined
+                        }
+                        onSelect={(date) => {
+                          if (date) {
+                            field.onChange(format(date, "yyyy-MM-dd"))
+                          }
+                        }}
+                        disabled={(date) => date > new Date()}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </FormItem>
+              )}
+            />
+
+            {/* Session Type */}
+            <FormField
+              control={form.control}
+              name="session_type"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Session Type</FormLabel>
+                  <Select
+                    onValueChange={handleSessionTypeChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="min-h-[44px]">
+                        <SelectValue placeholder="Select session" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {sessionTypes.map((type) => (
+                        <SelectItem key={type} value={type}>
+                          {type}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormDescription>
+                    Selecting Morning or Afternoon auto-fills the times.
+                  </FormDescription>
+                </FormItem>
+              )}
+            />
+
+            {/* Time In / Time Out — side by side */}
+            <div className="grid grid-cols-2 gap-3">
+              <FormField
+                control={form.control}
+                name="time_in"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Time In</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="time"
+                        step="60"
+                        className="min-h-[44px]"
+                        value={field.value.slice(0, 5)}
+                        onChange={(e) =>
+                          field.onChange(e.target.value + ":00")
+                        }
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="time_out"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Time Out</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="time"
+                        step="60"
+                        className="min-h-[44px]"
+                        value={field.value.slice(0, 5)}
+                        onChange={(e) =>
+                          field.onChange(e.target.value + ":00")
+                        }
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            {/* Task Description (optional) */}
+            <FormField
+              control={form.control}
+              name="task_description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    What did you work on?{" "}
+                    <span className="font-normal text-muted-foreground">
+                      (optional)
+                    </span>
+                  </FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="e.g., Encoded student records, organized files..."
+                      className="min-h-[80px] resize-none"
+                      maxLength={500}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription className="text-right">
+                    {field.value?.length ?? 0}/500
+                  </FormDescription>
+                </FormItem>
+              )}
+            />
+
+            {/* Submit */}
+            <Button
+              type="submit"
+              className="w-full min-h-[44px] text-base font-semibold"
+              disabled={isPending}
+            >
+              {isPending ? (
+                <>
+                  <Loader2 className="mr-2 size-4 animate-spin" />
+                  Logging...
+                </>
+              ) : (
+                "Log Hours"
+              )}
+            </Button>
+          </form>
+        </Form>
+      </CardContent>
+    </Card>
   )
 }

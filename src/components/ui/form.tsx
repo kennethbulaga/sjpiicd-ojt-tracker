@@ -139,18 +139,20 @@ function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
   const { error, formMessageId } = useFormField()
   const body = error ? String(error?.message ?? "") : props.children
 
-  if (!body) {
-    return null
-  }
-
   return (
     <p
       data-slot="form-message"
       id={formMessageId}
-      className={cn("text-sm text-destructive", className)}
+      className={cn(
+        "min-h-[20px] text-sm text-destructive transition-all duration-200",
+        body
+          ? "animate-in fade-in slide-in-from-top-1 opacity-100"
+          : "opacity-0",
+        className
+      )}
       {...props}
     >
-      {body}
+      {body ?? "\u00A0"}
     </p>
   )
 }
