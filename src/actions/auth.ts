@@ -5,6 +5,7 @@
 "use server"
 
 import { revalidatePath } from "next/cache"
+import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
 
@@ -24,6 +25,11 @@ export async function signOut() {
   // clears the auth cookies from the response. The scope "local" means
   // only this device's session is terminated (not all devices).
   await supabase.auth.signOut()
+
+  // Clear the onboarding cache cookie. Supabase clears its own auth
+  // cookies, but our custom cookie must be removed explicitly.
+  const cookieStore = await cookies()
+  cookieStore.delete("ojt-onboarded")
 
   // Note 5: Revalidate the root layout to clear any cached authenticated
   // data. This ensures that if the user logs back in as a different user,

@@ -1,6 +1,10 @@
 import { createServerClient } from "@supabase/ssr"
 import { NextResponse, type NextRequest } from "next/server"
 
+// Cookie name for caching onboarding completion status.
+// Avoids a DB query on every request after the user has onboarded.
+const ONBOARDED_COOKIE = "ojt-onboarded"
+
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
     request,
@@ -53,20 +57,40 @@ export async function updateSession(request: NextRequest) {
       !pathname.startsWith("/onboarding") && !pathname.startsWith("/api/")
 
     if (needsOnboardingCheck) {
-      const { data: profile } = await supabase
-        .from("users")
-        .select("program")
-        .eq("id", user.id)
-        .single()
+      // Performance optimization: skip DB query if the onboarded cookie
+      // matches the current user's ID. This eliminates the DB round-trip
+      // on subsequent requests. We store the user ID (not just "1") to
+      // handle the case where a different user signs in on the same browser
+      // — the stale cookie won't match, triggering a fresh DB check.
+      const hasOnboardedCookie = request.cookies.get(ONBOARDED_COOKIE)?.value === user.id
 
-      // New users have program = '' from the handle_new_user trigger
-      const needsOnboarding =
-        profile && (!profile.program || profile.program === "")
+      if (!hasOnboardedCookie) {
+        const { data: profile } = await supabase
+          .from("users")
+          .select("program")
+          .eq("id", user.id)
+          .single()
 
-      if (needsOnboarding) {
-        const url = request.nextUrl.clone()
-        url.pathname = "/onboarding"
-        return NextResponse.redirect(url)
+        // New users have program = '' from the handle_new_user trigger
+        const needsOnboarding =
+          profile && (!profile.program || profile.program === "")
+
+        if (needsOnboarding) {
+          const url = request.nextUrl.clone()
+          url.pathname = "/onboarding"
+          return NextResponse.redirect(url)
+        }
+
+        // User has completed onboarding — cache the user ID in a cookie
+        // so we skip the DB query on all future requests in this session.
+        // Storing user.id (not "1") ensures a different user signing in
+        // on the same browser triggers a fresh DB check.
+        supabaseResponse.cookies.set(ONBOARDED_COOKIE, user.id, {
+          httpOnly: true,
+          sameSite: "lax",
+          path: "/",
+          secure: process.env.NODE_ENV === "production",
+        })
       }
     }
 
