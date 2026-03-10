@@ -70,7 +70,7 @@ src/
 │   └── utils.ts                # cn() utility
 ├── stores/                     # Zustand (UI state only)
 ├── types/                      # TypeScript types
-└── middleware.ts                # Auth guard + session refresh
+└── proxy.ts                    # Auth guard + session refresh (Next.js 16 proxy convention)
 ```
 
 ## Validation Rules

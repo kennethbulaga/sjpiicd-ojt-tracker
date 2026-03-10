@@ -43,5 +43,12 @@ next-env.d.ts
 # agent / editor config (local-only, not shared via repo)
 .agents/
 .cursor/
+skills/
+skills-lock.json
 
+# docs & migrations (managed locally, applied manually to Supabase)
 docs/
+/supabase/
+
+
+temp/

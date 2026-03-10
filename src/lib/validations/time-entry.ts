@@ -30,10 +30,11 @@ export const timeEntrySchema = z
     time_in: z.string().time("Invalid time format"),
     time_out: z.string().time("Invalid time format"),
     // Note 7: z.enum() restricts values to the sessionTypes tuple.
-    // The errorMap customizes the error message — without it, Zod would
-    // show "Invalid enum value. Expected 'Morning' | 'Afternoon' | 'Overtime'".
+    // In Zod v4, the `message` option customizes the error — without it, Zod
+    // would show "Invalid enum value. Expected 'Morning' | 'Afternoon' | 'Overtime'".
+    // (Zod v3 used `errorMap`; v4 simplified this to a `message` string.)
     session_type: z.enum(sessionTypes, {
-      errorMap: () => ({ message: "Select a session type" }),
+      message: "Select a session type",
     }),
     // Note 8: Task description is optional (students may not always have
     // a description) with a 500-character max to prevent abuse. The
