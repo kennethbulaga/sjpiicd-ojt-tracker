@@ -145,7 +145,7 @@ export default async function LandingPage({
             </div>
 
             <p className="text-center text-xs text-muted-foreground/60 mt-8 font-body">
-              {companies.length} companies · {companyData?.length ?? 0} active interns
+              {companies.length} {companies.length === 1 ? 'company' : 'companies'} · {companyData?.length ?? 0} active {(companyData?.length ?? 0) === 1 ? 'intern' : 'interns'}
             </p>
           </div>
         </section>

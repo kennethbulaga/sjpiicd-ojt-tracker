@@ -58,11 +58,11 @@ export function CompanyCombobox({ value, onChange, onBlur }: CompanyComboboxProp
           role="combobox"
           aria-expanded={open}
           className={cn(
-            "min-h-[44px] w-full justify-between font-normal",
+            "min-h-[44px] h-auto w-full justify-between font-normal whitespace-normal text-left py-2",
             !value && "text-muted-foreground"
           )}
         >
-          <span className="truncate">
+          <span className="break-words">
             {value || "Select or type a company..."}
           </span>
           <ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
