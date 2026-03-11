@@ -8,6 +8,7 @@ import { createClient } from "@/lib/supabase/server"
 import { ProgressRing } from "@/components/dashboard/ProgressRing"
 import { StatsCards } from "@/components/dashboard/StatsCards"
 import { RecentEntries } from "@/components/time-entry/RecentEntries"
+import { FloatingActionButton } from "@/components/dashboard/FloatingActionButton"
 import { Button } from "@/components/ui/button"
 
 export const metadata = {
@@ -72,12 +73,6 @@ export default async function DashboardPage() {
             Here&apos;s your OJT progress overview.
           </p>
         </div>
-        <Button asChild className="min-h-[44px]">
-          <Link href="/log">
-            <Plus className="mr-2 size-4" />
-            Log Hours
-          </Link>
-        </Button>
       </div>
 
       {/* Progress Ring + Stats */}
@@ -132,6 +127,8 @@ export default async function DashboardPage() {
       >
         <RecentEntries />
       </Suspense>
+
+      <FloatingActionButton />
     </div>
   )
 }
