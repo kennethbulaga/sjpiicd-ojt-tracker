@@ -4,10 +4,20 @@ import {
   ArrowRight,
   Building2,
   Users,
+  Github,
+  Coffee,
 } from "lucide-react"
 import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton"
 import { ThemeToggle } from "@/components/layout/ThemeToggle"
 import { createAdminClient } from "@/lib/supabase/admin"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 
 
 export default async function LandingPage({
@@ -130,12 +140,12 @@ export default async function LandingPage({
               {companies.map(([name, count]) => (
                 <div
                   key={name}
-                  className="group flex items-center gap-2 rounded-full border border-border/50 bg-card/60 backdrop-blur-sm px-4 py-2 text-sm font-medium text-foreground transition-all duration-300 hover:border-primary/40 hover:bg-primary/5 hover:shadow-sm"
+                  className="group flex items-start gap-2.5 rounded-xl border border-border/50 bg-card/60 backdrop-blur-sm px-4 py-2.5 text-sm font-medium text-foreground transition-all duration-300 hover:border-primary/40 hover:bg-primary/5 hover:shadow-sm max-w-full"
                 >
-                  <Building2 className="size-3.5 text-muted-foreground group-hover:text-primary transition-colors" />
-                  <span>{name}</span>
+                  <Building2 className="flex-none size-4 mt-0.5 text-muted-foreground group-hover:text-primary transition-colors" />
+                  <span className="flex-1 text-left leading-snug break-words whitespace-normal">{name}</span>
                   {count > 1 && (
-                    <span className="inline-flex items-center gap-0.5 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary">
+                    <span className="inline-flex items-center gap-0.5 rounded-full bg-primary/10 px-1.5 py-0.5 text-[10px] sm:text-xs font-semibold text-primary shrink-0 mt-0.5">
                       <Users className="size-3" />
                       {count}
                     </span>
@@ -151,23 +161,85 @@ export default async function LandingPage({
         </section>
       )}
 
+      {/* ─── Support / Developer CTA ─── */}
+      <section className="py-16 px-6 md:px-12 border-b border-border/40 bg-zinc-50/50 dark:bg-zinc-900/20">
+        <div className="max-w-2xl mx-auto text-center flex flex-col items-center">
+          <div className="inline-flex items-center justify-center rounded-2xl bg-primary/10 p-3 mb-6">
+            <Coffee className="size-6 text-primary" />
+          </div>
+          <h2 className="font-display text-2xl sm:text-3xl tracking-tight text-foreground mb-4">
+            Fuel the Innovation
+          </h2>
+          <p className="text-muted-foreground font-body font-light mb-8 leading-relaxed">
+            JP-Track is an independent initiative dedicated to streamlining OJT workflows for SJPIICD students. If this tool adds value to your journey, consider fueling its continuous development.
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-4" id="support">
+            <Dialog>
+              <DialogTrigger asChild>
+                <button className="inline-flex items-center gap-2 rounded-full bg-[#007DFE]/10 text-[#0060C0] dark:text-[#52A8FF] hover:bg-[#007DFE]/20 px-6 py-2.5 text-sm font-semibold transition-all duration-300 hover:-translate-y-0.5">
+                  <Coffee className="size-4" />
+                  <span>Fuel via GCash</span>
+                </button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-sm">
+                <DialogHeader>
+                  <DialogTitle>Support via GCash</DialogTitle>
+                  <DialogDescription>
+                    Scan this QR code using your GCash app to send your support!
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="flex justify-center p-4">
+                  <Image 
+                    src="/qr-codes/gcash.jpg" 
+                    alt="GCash QR Code" 
+                    width={1224} 
+                    height={1224} 
+                    className="w-full h-auto max-w-[280px] rounded-xl shadow-sm border border-border/50"
+                  />
+                </div>
+              </DialogContent>
+            </Dialog>
+            <Dialog>
+              <DialogTrigger asChild>
+                <button className="inline-flex items-center gap-2 rounded-full bg-[#00D1FF]/10 text-[#0070C0] dark:text-[#00D1FF] hover:bg-[#00D1FF]/20 px-6 py-2.5 text-sm font-semibold transition-all duration-300 hover:-translate-y-0.5">
+                  <Coffee className="size-4" />
+                  <span>Support via GoTyme</span>
+                </button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-sm">
+                <DialogHeader>
+                  <DialogTitle>Support via GoTyme</DialogTitle>
+                  <DialogDescription>
+                    Scan this QR code using your GoTyme app to send your support!
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="flex justify-center p-4">
+                  <Image 
+                    src="/qr-codes/gotyme.jpg" 
+                    alt="GoTyme QR Code" 
+                    width={1032} 
+                    height={1403} 
+                    className="w-full h-auto max-w-[280px] rounded-xl shadow-sm border border-border/50"
+                  />
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
+        </div>
+      </section>
+
       {/* ─── Footer ─── */}
       <footer className="bg-nav text-nav-foreground px-6 py-12 md:px-12 flex flex-col md:flex-row justify-between items-center text-center md:text-left gap-6">
-        <div className="flex items-center gap-3">
-          <Image
-            src="/sjpiicd-logo.png"
-            alt="SJPIICD"
-            width={24}
-            height={24}
-            className="opacity-90 brightness-200 dark:brightness-100 dark:invert dark:opacity-70 dark:contrast-100"
-          />
+        <div className="flex items-center justify-center md:justify-start">
           <span className="font-display tracking-widest text-xs uppercase opacity-90 break-words">
             © {new Date().getFullYear()} St. John Paul II College of Davao
           </span>
         </div>
-        <div className="font-body font-light text-[11px] uppercase tracking-widest text-nav-foreground/70 flex flex-wrap justify-center gap-4 sm:gap-6">
-          <a href="https://kennethbulaga.dev" className="hover:text-nav-foreground hover:opacity-100 transition-colors">Developed by Kenneth Bulaga</a>
-          <a href="https://github.com/kennethbulaga" className="hover:text-nav-foreground hover:opacity-100 transition-colors">Source Code</a>
+        <div className="font-body font-light text-[11px] uppercase tracking-widest text-nav-foreground/70 flex flex-wrap items-center justify-center gap-4 sm:gap-6">
+          <a href="https://kennethbulaga.dev" target="_blank" rel="noopener noreferrer" className="hover:text-nav-foreground hover:opacity-100 transition-colors">Developed by Kenneth Bulaga</a>
+          <a href="https://github.com/kennethbulaga" target="_blank" rel="noopener noreferrer" className="hover:text-nav-foreground hover:opacity-100 transition-colors" aria-label="Source Code on GitHub">
+            <Github className="size-4" />
+          </a>
         </div>
       </footer>
     </div>
