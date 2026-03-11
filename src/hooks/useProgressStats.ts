@@ -21,13 +21,12 @@ export function useProgressStats(targetHours: number, totalMinutes: number) {
   // the ring shouldn't overflow past full circle.
   const percentComplete = Math.min(100, (hoursCompleted / targetHours) * 100)
 
-  // Note 6: Rounding to 1 decimal place using the multiply-round-divide
-  // pattern: Math.round(x * 10) / 10. This avoids floating-point display
-  // issues like "66.66666666666667%" showing in the UI. JavaScript's
-  // toFixed() returns a string, so this approach keeps the values as numbers.
+  // Note 6: Rounding to whole numbers for clean display. Math.floor for
+  // completed hours (conservative — don't overstate progress), Math.ceil
+  // for remaining (don't underestimate work left), Math.round for percentage.
   return {
-    hoursCompleted: Math.round(hoursCompleted * 10) / 10,
-    hoursRemaining: Math.round(hoursRemaining * 10) / 10,
-    percentComplete: Math.round(percentComplete * 10) / 10,
+    hoursCompleted: Math.floor(hoursCompleted),
+    hoursRemaining: Math.ceil(hoursRemaining),
+    percentComplete: Math.round(percentComplete),
   }
 }

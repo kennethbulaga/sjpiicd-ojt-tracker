@@ -13,10 +13,30 @@ import { createClient } from "@/lib/supabase/server"
 // mirrors the client-side validation exactly. Even if a malicious user
 // bypasses the client form, the server will reject invalid data.
 import { timeEntrySchema } from "@/lib/validations/time-entry"
+import { getPhilippineNow } from "@/lib/utils"
 // Note 4: date-fns provides reliable date/time math. differenceInMinutes
 // calculates the exact gap between two times, and parse() converts time
 // strings ("08:00:00") into Date objects for the calculation.
-import { differenceInMinutes, format, parse } from "date-fns"
+import { differenceInMinutes, parse } from "date-fns"
+
+// Helper: format minutes as "Xh Ym" for error messages
+function formatMinutesShort(mins: number): string {
+  const h = Math.floor(mins / 60)
+  const m = mins % 60
+  if (h === 0) return `${m}m`
+  if (m === 0) return `${h}h`
+  return `${h}h ${m}m`
+}
+
+// Helper: format "HH:mm:ss" time string as "h:mm AM/PM" for error messages
+function formatTimeDisplay(timeStr: string): string {
+  const date = parse(timeStr, "HH:mm:ss", new Date())
+  return new Intl.DateTimeFormat("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  }).format(date)
+}
 
 // Note 5: Server Actions receive FormData when called from a <form> element
 // with the "action" attribute. FormData is a web standard that represents
@@ -61,28 +81,40 @@ export async function createTimeEntry(formData: FormData) {
     return { error: result.error.flatten().fieldErrors }
   }
 
-  // Future time validation: if the entry is for today, time_out cannot be
-  // in the future. This prevents students from logging hours they haven't
-  // worked yet (e.g., logging 3PM-5PM when it's only 2PM).
-  const now = new Date()
-  const todayStr = format(now, "yyyy-MM-dd")
-  const currentTimeStr = format(now, "HH:mm:ss")
+  // Future time validation: if the entry is for today (PH time), time_out
+  // cannot be in the future. Uses Philippine timezone to match student expectations.
+  const phNow = getPhilippineNow()
+  const todayStr = phNow.date
+  const currentTimeStr = phNow.time
 
   if (result.data.date_logged === todayStr) {
     if (result.data.time_out > currentTimeStr) {
+      // Format current PH time for display (e.g., "3:45 PM")
+      const displayTime = new Intl.DateTimeFormat("en-PH", {
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+        timeZone: "Asia/Manila",
+      }).format(new Date())
       return {
         error: {
           time_out: [
-            `Time Out cannot be in the future. Current time is ${format(now, "h:mm a")}.`,
+            `Time Out cannot be in the future. Current time is ${displayTime}.`,
           ],
         },
       }
     }
     if (result.data.time_in > currentTimeStr) {
+      const displayTime = new Intl.DateTimeFormat("en-PH", {
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+        timeZone: "Asia/Manila",
+      }).format(new Date())
       return {
         error: {
           time_in: [
-            `Time In cannot be in the future. Current time is ${format(now, "h:mm a")}.`,
+            `Time In cannot be in the future. Current time is ${displayTime}.`,
           ],
         },
       }
@@ -90,15 +122,58 @@ export async function createTimeEntry(formData: FormData) {
   }
 
   const { time_in, time_out, ...rest } = result.data
-  // Note 12: parse() converts time strings to Date objects using a format
-  // pattern. The base date (new Date()) doesn't matter because we only
-  // care about the time difference, not the absolute date.
+
+  // Calculate duration of the new entry first (needed for limit check)
   const timeInDate = parse(time_in, "HH:mm:ss", new Date())
   const timeOutDate = parse(time_out, "HH:mm:ss", new Date())
-  // Note 13: differenceInMinutes returns a whole number of minutes between
-  // two dates. Storing minutes (not hours) as an integer avoids floating-point
-  // issues (e.g., 4 hours 30 min = 270, not 4.5000000001).
   const total_minutes = differenceInMinutes(timeOutDate, timeInDate)
+
+  // Fetch existing entries for the same date to check limits and overlaps
+  const { data: existingEntries } = await supabase
+    .from("time_entries")
+    .select("time_in, time_out, total_minutes, session_type")
+    .eq("user_id", user.id)
+    .eq("date_logged", result.data.date_logged)
+
+  if (existingEntries && existingEntries.length > 0) {
+    // Max 12 hours/day validation
+    const existingMinutes = existingEntries.reduce(
+      (sum, e) => sum + (e.total_minutes ?? 0),
+      0
+    )
+    const MAX_DAILY_MINUTES = 720 // 12 hours
+    if (existingMinutes + total_minutes > MAX_DAILY_MINUTES) {
+      const remainingMinutes = Math.max(0, MAX_DAILY_MINUTES - existingMinutes)
+      const remainingH = Math.floor(remainingMinutes / 60)
+      const remainingM = remainingMinutes % 60
+      const remainingStr = remainingH > 0
+        ? `${remainingH}h${remainingM > 0 ? ` ${remainingM}m` : ""}`
+        : `${remainingM}m`
+      return {
+        error: {
+          time_out: [
+            `Adding this session (${formatMinutesShort(total_minutes)}) would exceed the 12-hour daily limit. You have ${remainingStr} remaining today.`,
+          ],
+        },
+      }
+    }
+
+    // Overlap detection — check if new [time_in, time_out] overlaps any existing entry
+    // Two ranges [A_start, A_end] and [B_start, B_end] overlap iff A_start < B_end AND A_end > B_start
+    for (const existing of existingEntries) {
+      if (time_in < existing.time_out && time_out > existing.time_in) {
+        const overlapStart = formatTimeDisplay(existing.time_in)
+        const overlapEnd = formatTimeDisplay(existing.time_out)
+        return {
+          error: {
+            time_in: [
+              `This session overlaps with an existing ${existing.session_type} entry (${overlapStart} – ${overlapEnd}).`,
+            ],
+          },
+        }
+      }
+    }
+  }
 
   // Note 14: The Supabase insert adds user_id from the authenticated session.
   // Even though RLS would block inserts for other users, explicitly setting

@@ -12,30 +12,7 @@ type ActionResult =
   | { error: string }
   | { error: Record<string, string[] | undefined> }
 
-export async function skipOnboarding(): Promise<ActionResult> {
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
 
-  if (!user) {
-    return { error: "Unauthorized" }
-  }
-
-  // Set program to "-" so the proxy stops redirecting to /onboarding.
-  // Keep default target_hours (486) from the DB.
-  const { error } = await supabase
-    .from("users")
-    .update({ program: "-" })
-    .eq("id", user.id)
-
-  if (error) {
-    return { error: `Failed to skip onboarding: ${error.message}` }
-  }
-
-  revalidatePath("/dashboard")
-  redirect("/dashboard")
-}
 
 export async function completeOnboarding(formData: FormData): Promise<ActionResult> {
   const supabase = await createClient()
@@ -48,7 +25,9 @@ export async function completeOnboarding(formData: FormData): Promise<ActionResu
   }
 
   const raw = {
+    company_name: formData.get("company_name"),
     target_hours: formData.get("target_hours"),
+    program: formData.get("program") || undefined,
   }
 
   // zod: safeParse for user input (parse-use-safeparse), flatten for form errors (error-use-flatten)
@@ -61,8 +40,9 @@ export async function completeOnboarding(formData: FormData): Promise<ActionResu
   const { error } = await supabase
     .from("users")
     .update({
-      program: "-",
+      company_name: result.data.company_name,
       target_hours: result.data.target_hours,
+      program: result.data.program || "-",
     })
     .eq("id", user.id)
 

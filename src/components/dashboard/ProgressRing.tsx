@@ -33,7 +33,7 @@ export function ProgressRing({ hoursCompleted, targetHours }: ProgressRingProps)
           height={size}
           viewBox={`0 0 ${size} ${size}`}
           className="-rotate-90"
-          aria-label={`${percentage.toFixed(1)}% OJT progress`}
+          aria-label={`${Math.round(percentage)}% OJT progress`}
           role="img"
         >
           {/* Background track */}
@@ -65,11 +65,11 @@ export function ProgressRing({ hoursCompleted, targetHours }: ProgressRingProps)
         {/* Center text overlay */}
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
           <p className="text-3xl font-bold tracking-tight">
-            {percentage >= 100 ? "100" : percentage.toFixed(1)}%
+            {percentage >= 100 ? "100" : Math.round(percentage)}%
           </p>
           <p className="text-sm text-muted-foreground">
             {hoursRemaining > 0
-              ? `${hoursRemaining.toFixed(1)}h left`
+              ? `${Math.ceil(hoursRemaining)}h left`
               : "Complete!"}
           </p>
         </div>
@@ -78,7 +78,7 @@ export function ProgressRing({ hoursCompleted, targetHours }: ProgressRingProps)
       {/* Hours label */}
       <p className="text-sm text-muted-foreground">
         <span className="font-semibold text-foreground">
-          {hoursCompleted.toFixed(1)}
+          {Math.floor(hoursCompleted)}
         </span>{" "}
         / {targetHours} hours
       </p>

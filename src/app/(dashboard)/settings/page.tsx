@@ -1,18 +1,52 @@
-// Note 1: The settings page at "/settings" allows students to update their
-// profile information (name, program, company) and customize their OJT
-// target hours. Profile updates are handled via the updateProfile Server Action.
+import { redirect } from "next/navigation"
 
-// Note 2: This Server Component can pre-fetch the user's current profile
-// from Supabase, then pass it as defaultValues to a Client Component form.
-// This pattern avoids an extra client-side fetch and ensures the form
-// renders with data on the first paint.
-export default function SettingsPage() {
+import { createClient } from "@/lib/supabase/server"
+import { SettingsForm } from "@/components/settings/SettingsForm"
+
+export const metadata = {
+  title: "Settings — JP Track",
+}
+
+export default async function SettingsPage() {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect("/")
+  }
+
+  // Fetch the user's current profile from the database
+  const { data: profile } = await supabase
+    .from("users")
+    .select("full_name, program, company_name, target_hours")
+    .eq("id", user.id)
+    .single()
+
+  // Build default values from DB profile, falling back to auth metadata
+  const defaultValues = {
+    full_name:
+      profile?.full_name ??
+      user.user_metadata?.full_name ??
+      user.user_metadata?.name ??
+      "",
+    program: profile?.program ?? "",
+    company_name: profile?.company_name ?? null,
+    target_hours: profile?.target_hours ?? 486,
+    email: user.email ?? "",
+  }
+
   return (
-    <div className="p-4 md:p-6 lg:p-8">
-      <h1 className="text-2xl font-bold">Settings</h1>
-      {/* Note 3: A profile form (Client Component using React Hook Form + Zod)
-          and target hours configuration will be placed here. The form will
-          use the profileSchema from src/actions/profile.ts for validation. */}
+    <div className="mx-auto max-w-2xl space-y-6 p-4 md:p-6 lg:p-8">
+      <div>
+        <h1 className="text-2xl font-bold">Settings</h1>
+        <p className="text-sm text-muted-foreground">
+          Manage your profile and OJT preferences.
+        </p>
+      </div>
+
+      <SettingsForm defaultValues={defaultValues} />
     </div>
   )
 }

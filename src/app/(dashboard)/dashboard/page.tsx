@@ -1,10 +1,10 @@
 import { redirect } from "next/navigation"
-import { format } from "date-fns"
 import { Suspense } from "react"
 import Link from "next/link"
 import { Plus } from "lucide-react"
 
 import { createClient } from "@/lib/supabase/server"
+import { getPhilippineNow } from "@/lib/utils"
 import { ProgressRing } from "@/components/dashboard/ProgressRing"
 import { StatsCards } from "@/components/dashboard/StatsCards"
 import { RecentEntries } from "@/components/time-entry/RecentEntries"
@@ -44,8 +44,11 @@ export default async function DashboardPage() {
   const hoursCompleted = totalMinutes / 60
   const totalEntries = entries?.length ?? 0
 
-  // Today's minutes
-  const today = format(new Date(), "yyyy-MM-dd")
+  // Get Philippine date/time for server-side calculations
+  const phNow = getPhilippineNow()
+
+  // Today's minutes (using PH date, not server UTC)
+  const today = phNow.date
   const todayMinutes =
     entries
       ?.filter((e) => e.date_logged === today)
@@ -57,9 +60,8 @@ export default async function DashboardPage() {
     user.user_metadata?.full_name?.split(" ")[0] ??
     "Student"
 
-  const hour = new Date().getHours()
   const greeting =
-    hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening"
+    phNow.hour < 12 ? "Good morning" : phNow.hour < 17 ? "Good afternoon" : "Good evening"
 
   return (
     <div className="mx-auto max-w-5xl space-y-6 p-4 md:p-6 lg:p-8">

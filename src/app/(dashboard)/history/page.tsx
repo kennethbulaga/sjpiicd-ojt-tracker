@@ -49,7 +49,7 @@ export default async function HistoryPage() {
         <div>
           <h1 className="text-2xl font-bold">DTR History</h1>
           <p className="text-sm text-muted-foreground">
-            {safeEntries.length} entries · {totalHours.toFixed(1)} total hours
+            {safeEntries.length} entries · {Math.floor(totalHours)} total hours
           </p>
         </div>
         <ExportActions entries={safeEntries} />

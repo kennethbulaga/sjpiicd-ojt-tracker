@@ -25,7 +25,10 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 
-import { completeOnboarding, skipOnboarding } from "@/actions/onboarding"
+import { Separator } from "@/components/ui/separator"
+import { CompanyCombobox } from "@/components/settings/CompanyCombobox"
+
+import { completeOnboarding } from "@/actions/onboarding"
 import {
   onboardingSchema,
   type OnboardingInput,
@@ -42,14 +45,20 @@ export function OnboardingForm({ userName }: OnboardingFormProps) {
   const form = useForm<OnboardingInput>({
     resolver: zodResolver(onboardingSchema),
     defaultValues: {
+      company_name: "",
       target_hours: 486,
+      program: "",
     },
   })
 
   function onSubmit(data: OnboardingInput) {
     startTransition(async () => {
       const formData = new FormData()
+      formData.set("company_name", data.company_name)
       formData.set("target_hours", String(data.target_hours))
+      if (data.program) {
+        formData.set("program", data.program)
+      }
 
       const result = await completeOnboarding(formData)
 
@@ -63,19 +72,7 @@ export function OnboardingForm({ userName }: OnboardingFormProps) {
     })
   }
 
-  function handleSkip() {
-    startTransition(async () => {
-      const result = await skipOnboarding()
 
-      if (result && "error" in result) {
-        toast.error(
-          typeof result.error === "string"
-            ? result.error
-            : "Failed to skip onboarding."
-        )
-      }
-    })
-  }
 
   const firstName = userName.split(" ")[0] || "Student"
 
@@ -86,14 +83,39 @@ export function OnboardingForm({ userName }: OnboardingFormProps) {
           Welcome, {firstName}! 👋
         </CardTitle>
         <CardDescription>
-          Set your OJT target hours to get started. You can update this
-          anytime in Settings.
+          Tell us about your OJT placement to get started. You can update
+          these anytime in Settings.
         </CardDescription>
       </CardHeader>
 
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+            {/* 1. Company — required */}
+            <FormField
+              control={form.control}
+              name="company_name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Company / Organization</FormLabel>
+                  <FormControl>
+                    <CompanyCombobox
+                      value={field.value ?? ""}
+                      onChange={(val) => field.onChange(val)}
+                      onBlur={field.onBlur}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Where you&apos;re completing your OJT.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <Separator />
+
+            {/* 2. Target Hours — required */}
             <FormField
               control={form.control}
               name="target_hours"
@@ -104,7 +126,7 @@ export function OnboardingForm({ userName }: OnboardingFormProps) {
                     <Input
                       type="number"
                       min={1}
-                      max={2000}
+                      max={999}
                       className="min-h-[44px] text-center text-lg font-semibold"
                       {...field}
                     />
@@ -112,6 +134,35 @@ export function OnboardingForm({ userName }: OnboardingFormProps) {
                   <FormDescription>
                     CHED-mandated hours for your program (default: 486 for
                     most programs).
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <Separator />
+
+            {/* 3. Program — optional */}
+            <FormField
+              control={form.control}
+              name="program"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Program / Course{" "}
+                    <span className="font-normal text-muted-foreground">
+                      (optional)
+                    </span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="e.g., BSIT, BSBA, BEED"
+                      className="min-h-[44px]"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Your enrolled academic program.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -135,14 +186,6 @@ export function OnboardingForm({ userName }: OnboardingFormProps) {
           </form>
         </Form>
 
-        <Button
-          variant="ghost"
-          className="mt-3 w-full min-h-[44px] text-muted-foreground"
-          disabled={isPending}
-          onClick={handleSkip}
-        >
-          Skip for now
-        </Button>
       </CardContent>
     </Card>
   )

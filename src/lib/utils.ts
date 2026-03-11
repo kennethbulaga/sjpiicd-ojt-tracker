@@ -17,3 +17,27 @@ import { twMerge } from "tailwind-merge"
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
+
+// Note 4: Server-side code (Server Components, Server Actions) runs in UTC
+// on Vercel. This helper returns date/time strings in Philippine timezone
+// (Asia/Manila, UTC+8) so server-side time comparisons match student expectations.
+export function getPhilippineNow() {
+  const formatter = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Manila",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  })
+  const parts = Object.fromEntries(
+    formatter.formatToParts(new Date()).map((p) => [p.type, p.value])
+  )
+  return {
+    date: `${parts.year}-${parts.month}-${parts.day}`,
+    time: `${parts.hour}:${parts.minute}:${parts.second}`,
+    hour: Number(parts.hour),
+  }
+}

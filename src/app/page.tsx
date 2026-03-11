@@ -1,36 +1,14 @@
 import Image from "next/image"
 import {
-  Clock,
-  BarChart3,
-  FileText,
   Shield,
-  ArrowRight
+  ArrowRight,
+  Building2,
+  Users,
 } from "lucide-react"
 import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton"
 import { ThemeToggle } from "@/components/layout/ThemeToggle"
+import { createAdminClient } from "@/lib/supabase/admin"
 
-const features = [
-  {
-    icon: Clock,
-    title: "Elegant Timekeeping",
-    description: "Record your hours with precision, bypassing the usual friction of manual entry.",
-  },
-  {
-    icon: BarChart3,
-    title: "Refined Metrics",
-    description: "Watch your progress advance in an uncompromising, beautiful visual format.",
-  },
-  {
-    icon: FileText,
-    title: "Seamless Export",
-    description: "Generate compliant, professional DTRs securely in a single unyielding click.",
-  },
-  {
-    icon: Shield,
-    title: "Exclusive Auth",
-    description: "Secure, verified access via the @sjp2cd.edu.ph institutional network infrastructure.",
-  },
-]
 
 export default async function LandingPage({
   searchParams,
@@ -39,10 +17,30 @@ export default async function LandingPage({
 }) {
   const params = await searchParams
 
+  // Fetch distinct companies with student count for the landing page showcase
+  const supabase = createAdminClient()
+  const { data: companyData } = await supabase
+    .from("users")
+    .select("company_name")
+    .not("company_name", "is", null)
+    .not("company_name", "eq", "")
+
+  // Group by company and count students
+  const companyMap = new Map<string, number>()
+  companyData?.forEach(({ company_name }: { company_name: string | null }) => {
+    if (company_name) {
+      companyMap.set(company_name, (companyMap.get(company_name) ?? 0) + 1)
+    }
+  })
+
+  // Sort by count (most students first), then alphabetically
+  const companies = Array.from(companyMap.entries())
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+
   return (
     <div className="flex min-h-dvh flex-col bg-background overflow-x-hidden selection:bg-primary selection:text-primary-foreground">
       {/* ─── Header Navigation ─── */}
-      <nav className="bg-primary dark:bg-background text-primary-foreground dark:text-foreground flex justify-between items-center px-6 py-5 md:px-12 border-b-0 dark:border-b dark:border-border/40 relative z-20 shadow-md dark:shadow-none">
+      <nav className="bg-nav text-nav-foreground flex justify-between items-center px-6 py-5 md:px-12 relative z-20 shadow-md">
         <div className="flex items-center gap-4">
           <Image
             src="/sjpiicd-logo.png"
@@ -51,9 +49,9 @@ export default async function LandingPage({
             height={32}
             className="rounded-md opacity-100 drop-shadow-md brightness-110 contrast-125 dark:grayscale dark:contrast-100 dark:brightness-100 dark:drop-shadow-none"
           />
-          <span className="font-display text-xl tracking-widest text-primary-foreground dark:text-foreground font-bold">JP-Track</span>
+          <span className="font-display text-xl tracking-widest text-nav-foreground font-bold">JP-Track</span>
         </div>
-        <div className="flex items-center gap-2 [&_button]:text-primary-foreground dark:[&_button]:text-foreground [&_button]:hover:bg-primary-foreground/10 dark:[&_button]:hover:bg-foreground/10 [&_button]:border-primary-foreground/20 dark:[&_button]:border-border/40 [&_svg]:!text-primary-foreground dark:[&_svg]:!text-foreground">
+        <div className="flex items-center gap-2 [&_button]:text-nav-foreground [&_button]:hover:bg-nav-foreground/10 [&_button]:border-nav-foreground/20 [&_svg]:!text-nav-foreground">
           <ThemeToggle />
         </div>
       </nav>
@@ -65,7 +63,7 @@ export default async function LandingPage({
         {/* Hero Content (Centered Refinement) */}
         <div className="w-full max-w-5xl px-6 py-20 md:py-32 flex flex-col items-center text-center relative z-10">
           <div className="animate-fade-up flex flex-col items-center">
-            <span className="font-body text-xs md:text-sm font-semibold tracking-[0.2em] uppercase text-sky-600 dark:text-sky-400 mb-6 drop-shadow-sm">
+            <span className="font-body text-xs md:text-sm font-semibold tracking-[0.2em] uppercase text-primary mb-6 drop-shadow-sm">
               Independent Student Initiative
             </span>
             <h1 className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl break-words leading-[1.05] tracking-tight text-foreground max-w-4xl">
@@ -109,41 +107,67 @@ export default async function LandingPage({
         </div>
       </main>
 
-      {/* ─── Features Banners ─── */}
-      <section className="grid md:grid-cols-2 lg:grid-cols-4 max-w-7xl mx-auto w-full border-b border-border/30">
-        {features.map(({ icon: Icon, title, description }, i) => (
-          <div
-            key={title}
-            className={`p-10 lg:p-12 animate-fade-up delay-${(i + 1) * 100} group hover:bg-muted/30 transition-all duration-500 border-b md:border-b-0 md:border-r border-border/30 last:border-0`}
-          >
-            <div className="h-14 w-14 rounded-2xl bg-secondary/50 flex items-center justify-center mb-6 text-primary dark:text-sky-400 group-hover:bg-primary dark:group-hover:bg-sky-400 group-hover:text-primary-foreground dark:group-hover:text-sky-950 transition-colors duration-300">
-              <Icon />
+
+
+      {/* ─── Companies Showcase ─── */}
+      {companies.length > 0 && (
+        <section className="py-16 md:py-24 px-6 md:px-12 border-b border-border/30">
+          <div className="max-w-5xl mx-auto">
+            <div className="text-center mb-12">
+              <span className="font-body text-xs md:text-sm font-semibold tracking-[0.2em] uppercase text-primary mb-4 block">
+                OJT Partner Companies
+              </span>
+              <h2 className="font-display text-3xl sm:text-4xl tracking-tight text-foreground">
+                Where Our Students Are
+              </h2>
+              <p className="mt-4 text-muted-foreground font-body font-light max-w-xl mx-auto">
+                SJPIICD interns are gaining hands-on experience at leading Davao
+                City organizations.
+              </p>
             </div>
-            <h3 className="font-display text-xl tracking-wide mb-3 text-foreground">{title}</h3>
-            <p className="text-muted-foreground/80 leading-relaxed font-body font-light text-sm">
-              {description}
+
+            <div className="flex flex-wrap justify-center gap-3">
+              {companies.map(([name, count]) => (
+                <div
+                  key={name}
+                  className="group flex items-center gap-2 rounded-full border border-border/50 bg-card/60 backdrop-blur-sm px-4 py-2 text-sm font-medium text-foreground transition-all duration-300 hover:border-primary/40 hover:bg-primary/5 hover:shadow-sm"
+                >
+                  <Building2 className="size-3.5 text-muted-foreground group-hover:text-primary transition-colors" />
+                  <span>{name}</span>
+                  {count > 1 && (
+                    <span className="inline-flex items-center gap-0.5 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary">
+                      <Users className="size-3" />
+                      {count}
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            <p className="text-center text-xs text-muted-foreground/60 mt-8 font-body">
+              {companies.length} companies · {companyData?.length ?? 0} active interns
             </p>
           </div>
-        ))}
-      </section>
+        </section>
+      )}
 
       {/* ─── Footer ─── */}
-      <footer className="bg-primary dark:bg-background text-primary-foreground dark:text-foreground px-6 py-12 md:px-12 flex flex-col md:flex-row justify-between items-center text-center md:text-left gap-6 border-t-0 dark:border-t dark:border-border/40">
+      <footer className="bg-nav text-nav-foreground px-6 py-12 md:px-12 flex flex-col md:flex-row justify-between items-center text-center md:text-left gap-6">
         <div className="flex items-center gap-3">
           <Image
             src="/sjpiicd-logo.png"
             alt="SJPIICD"
             width={24}
             height={24}
-            className="opacity-90 grayscale contrast-125 dark:invert dark:opacity-70 dark:contrast-100"
+            className="opacity-90 brightness-200 dark:brightness-100 dark:invert dark:opacity-70 dark:contrast-100"
           />
-          <span className="font-display tracking-widest text-xs uppercase opacity-90 dark:opacity-70 break-words">
+          <span className="font-display tracking-widest text-xs uppercase opacity-90 break-words">
             © {new Date().getFullYear()} St. John Paul II College of Davao
           </span>
         </div>
-        <div className="font-body font-light text-[11px] uppercase tracking-widest text-primary-foreground/70 dark:text-muted-foreground flex flex-wrap justify-center gap-4 sm:gap-6">
-          <a href="https://kennethbulaga.dev" className="hover:text-accent dark:hover:text-foreground hover:opacity-100 transition-colors">Developed by Kenneth Bulaga</a>
-          <a href="https://github.com/kennethbulaga" className="hover:text-accent dark:hover:text-foreground hover:opacity-100 transition-colors">Source Code</a>
+        <div className="font-body font-light text-[11px] uppercase tracking-widest text-nav-foreground/70 flex flex-wrap justify-center gap-4 sm:gap-6">
+          <a href="https://kennethbulaga.dev" className="hover:text-nav-foreground hover:opacity-100 transition-colors">Developed by Kenneth Bulaga</a>
+          <a href="https://github.com/kennethbulaga" className="hover:text-nav-foreground hover:opacity-100 transition-colors">Source Code</a>
         </div>
       </footer>
     </div>

@@ -20,13 +20,13 @@ export function StatsCards({
   const stats = [
     {
       label: "Hours Completed",
-      value: hoursCompleted.toFixed(1),
+      value: Math.floor(hoursCompleted).toString(),
       icon: Clock,
       description: "Total logged hours",
     },
     {
       label: "Hours Remaining",
-      value: hoursRemaining.toFixed(1),
+      value: Math.ceil(hoursRemaining).toString(),
       icon: Target,
       description: `of ${targetHours}h target`,
     },
@@ -38,7 +38,7 @@ export function StatsCards({
     },
     {
       label: "Today",
-      value: todayHours > 0 ? `${todayHours.toFixed(1)}h` : "—",
+      value: todayHours > 0 ? `${Math.round(todayHours)}h` : "—",
       icon: TrendingUp,
       description: todayHours > 0 ? "Hours logged today" : "No entries today",
     },
