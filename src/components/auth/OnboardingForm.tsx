@@ -128,7 +128,15 @@ export function OnboardingForm({ userName }: OnboardingFormProps) {
                       min={1}
                       max={999}
                       className="min-h-[44px] text-center text-lg font-semibold"
-                      {...field}
+                      value={field.value}
+                      onChange={(e) =>
+                        field.onChange(
+                          e.target.value === "" ? "" : Number(e.target.value)
+                        )
+                      }
+                      onBlur={field.onBlur}
+                      name={field.name}
+                      ref={field.ref}
                     />
                   </FormControl>
                   <FormDescription>

@@ -8,7 +8,7 @@ export const onboardingSchema = z.object({
     .number({ message: "Target hours is required" })
     .int("Target hours must be a whole number")
     .min(1, "Target hours must be at least 1")
-    .max(2000, "Target hours cannot exceed 2000"),
+    .max(999, "Target hours cannot exceed 999"),
   program: z.string().optional(),
 })
 
@@ -20,7 +20,7 @@ export const onboardingServerSchema = z.object({
     .number()
     .int("Target hours must be a whole number")
     .min(1, "Target hours must be at least 1")
-    .max(2000, "Target hours cannot exceed 2000"),
+    .max(999, "Target hours cannot exceed 999"),
   program: z.string().optional(),
 })
 
