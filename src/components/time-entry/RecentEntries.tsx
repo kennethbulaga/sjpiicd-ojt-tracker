@@ -1,32 +1,12 @@
-import { format, parse } from "date-fns"
+import { format } from "date-fns"
 import { CalendarDays, Clock } from "lucide-react"
 
+import { cn } from "@/lib/utils"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { createClient } from "@/lib/supabase/server"
 import { DeleteEntryButton } from "@/components/time-entry/DeleteEntryButton"
-
-function formatMinutes(totalMinutes: number): string {
-  const hours = Math.floor(totalMinutes / 60)
-  const minutes = totalMinutes % 60
-  if (hours === 0) return `${minutes}m`
-  if (minutes === 0) return `${hours}h`
-  return `${hours}h ${minutes}m`
-}
-
-function formatTime(timeStr: string): string {
-  // timeStr is "HH:mm:ss" — parse and format to "h:mm a"
-  const date = parse(timeStr, "HH:mm:ss", new Date())
-  return format(date, "h:mm a")
-}
-
-type SessionType = "Morning" | "Afternoon" | "Overtime"
-
-const sessionBadgeVariant: Record<SessionType, "default" | "secondary" | "outline"> = {
-  Morning: "default",
-  Afternoon: "secondary",
-  Overtime: "outline",
-}
+import { formatMinutes, formatTime, type SessionType, sessionBadgeVariant } from "./shared"
 
 export async function RecentEntries() {
   const supabase = await createClient()
@@ -42,7 +22,7 @@ export async function RecentEntries() {
     .eq("user_id", user.id)
     .order("date_logged", { ascending: false })
     .order("time_in", { ascending: false })
-    .limit(5)
+    .limit(6)
 
   return (
     <Card className="rounded-xl shadow-sm">
@@ -79,7 +59,12 @@ export async function RecentEntries() {
                         "MMM d, yyyy"
                       )}
                     </span>
-                    <Badge variant={sessionBadgeVariant[entry.session_type as SessionType] ?? "outline"}>
+                    <Badge
+                      variant={sessionBadgeVariant[entry.session_type as SessionType] ?? "outline"}
+                      className={cn(
+                        entry.session_type === "Afternoon" && "badge-afternoon"
+                      )}
+                    >
                       {entry.session_type}
                     </Badge>
                   </div>

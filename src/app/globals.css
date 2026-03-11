@@ -222,3 +222,15 @@
 .delay-100 { animation-delay: 100ms; }
 .delay-200 { animation-delay: 200ms; }
 .delay-300 { animation-delay: 300ms; }
+
+@layer components {
+  .badge-afternoon {
+    background-color: #f59e0b !important;
+    color: #ffffff !important;
+    border-color: transparent !important;
+  }
+  .dark .badge-afternoon {
+    background-color: #451a03 !important;
+    color: #fde68a !important;
+  }
+}
