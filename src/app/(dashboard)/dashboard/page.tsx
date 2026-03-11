@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation"
 import { Suspense } from "react"
 import Link from "next/link"
-import { Plus } from "lucide-react"
+import { Plus, Building2 } from "lucide-react"
 
 import { createClient } from "@/lib/supabase/server"
 import { getPhilippineNow } from "@/lib/utils"
@@ -28,7 +28,7 @@ export default async function DashboardPage() {
   // Fetch user profile for target_hours
   const { data: profile } = await supabase
     .from("users")
-    .select("target_hours, full_name, nickname")
+    .select("target_hours, full_name, nickname, company_name")
     .eq("id", user.id)
     .single()
 
@@ -72,6 +72,12 @@ export default async function DashboardPage() {
           <h1 className="text-2xl font-bold">
             {greeting}, {firstName}!
           </h1>
+          {profile?.company_name && (
+            <div className="flex items-center gap-1.5 mt-1 mb-2 text-sm font-medium text-muted-foreground/90">
+              <Building2 className="w-4 h-4" />
+              <span>{profile.company_name}</span>
+            </div>
+          )}
           <p className="text-sm text-muted-foreground">
             Here&apos;s your OJT progress overview.
           </p>
