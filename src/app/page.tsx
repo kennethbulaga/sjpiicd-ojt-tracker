@@ -10,6 +10,7 @@ import {
 import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton"
 import { ThemeToggle } from "@/components/layout/ThemeToggle"
 import { createAdminClient } from "@/lib/supabase/admin"
+import { headers } from "next/headers"
 import {
   Dialog,
   DialogContent,
@@ -26,6 +27,9 @@ export default async function LandingPage({
   searchParams: Promise<{ error?: string }>
 }) {
   const params = await searchParams
+  const headersList = await headers()
+  const userAgent = headersList.get("user-agent") || ""
+  const isInAppBrowser = /FBAN|FBAV|Instagram|Line|Twitter|Snapchat/i.test(userAgent)
 
   // Fetch distinct companies with student count for the landing page showcase
   const supabase = createAdminClient()
@@ -99,9 +103,18 @@ export default async function LandingPage({
               )}
 
               <h3 className="font-display text-2xl tracking-wide mb-1 text-foreground">Secure Access</h3>
-              <p className="text-muted-foreground text-sm font-light leading-relaxed mb-8">
+              <p className="text-muted-foreground text-sm font-light leading-relaxed mb-6">
                 Authenticate via your academic Google Workspace credentials to proceed.
               </p>
+
+              {isInAppBrowser && (
+                <div className="mb-6 flex items-start gap-3 rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-600 dark:text-amber-400 font-medium">
+                  <Shield className="mt-0.5 size-5 shrink-0" />
+                  <span>
+                    <strong>In-App Browser Detected:</strong> Google Sign-In is blocked here. Please tap the corner menu (•••) and select &quot;Open in system browser&quot; (Safari/Chrome) to log in.
+                  </span>
+                </div>
+              )}
 
               <div className="w-full">
                 <GoogleSignInButton />
@@ -168,10 +181,10 @@ export default async function LandingPage({
             <Coffee className="size-6 text-primary" />
           </div>
           <h2 className="font-display text-2xl sm:text-3xl tracking-tight text-foreground mb-4">
-            Fuel the Innovation
+            Support JP-Track
           </h2>
           <p className="text-muted-foreground font-body font-light mb-8 leading-relaxed">
-            JP-Track is an independent initiative dedicated to streamlining OJT workflows for SJPIICD students. If this tool adds value to your journey, consider fueling its continuous development.
+            JP-Track is an independent project built to take the headache out of OJT logging for JPCEANS. If this tool saves you time on paperwork, consider buying a coffee to keep the servers running!
           </p>
           <div className="flex flex-wrap items-center justify-center gap-4" id="support">
             <Dialog>
