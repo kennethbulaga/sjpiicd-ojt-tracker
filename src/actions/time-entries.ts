@@ -136,6 +136,20 @@ export async function createTimeEntry(formData: FormData) {
     .eq("date_logged", result.data.date_logged)
 
   if (existingEntries && existingEntries.length > 0) {
+    // Check for duplicate session type on the same day FIRST
+    const hasDuplicateSessionType = existingEntries.some(
+      (e) => e.session_type === result.data.session_type
+    )
+    if (hasDuplicateSessionType) {
+      return {
+        error: {
+          session_type: [
+            `You can only log 1 ${result.data.session_type} entry per day.`,
+          ],
+        },
+      }
+    }
+
     // Max 12 hours/day validation
     const existingMinutes = existingEntries.reduce(
       (sum, e) => sum + (e.total_minutes ?? 0),

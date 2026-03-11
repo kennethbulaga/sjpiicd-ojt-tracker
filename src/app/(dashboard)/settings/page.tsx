@@ -20,7 +20,7 @@ export default async function SettingsPage() {
   // Fetch the user's current profile from the database
   const { data: profile } = await supabase
     .from("users")
-    .select("full_name, program, company_name, target_hours")
+    .select("full_name, nickname, program, company_name, target_hours")
     .eq("id", user.id)
     .single()
 
@@ -31,6 +31,7 @@ export default async function SettingsPage() {
       user.user_metadata?.full_name ??
       user.user_metadata?.name ??
       "",
+    nickname: profile?.nickname ?? "",
     program: profile?.program ?? "",
     company_name: profile?.company_name ?? null,
     target_hours: profile?.target_hours ?? 486,

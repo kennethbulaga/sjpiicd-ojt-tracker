@@ -4,6 +4,7 @@ import { z } from "zod"
 // input type="number" provides an actual number value. No coercion needed.
 export const profileSchema = z.object({
   full_name: z.string().min(1, "Full name is required"),
+  nickname: z.string().optional(),
   program: z.string().min(1, "Program is required"),
   company_name: z.string().optional(),
   target_hours: z
@@ -17,6 +18,7 @@ export const profileSchema = z.object({
 // returns strings. Coercion converts the string to number before validation.
 export const profileServerSchema = z.object({
   full_name: z.string().min(1, "Full name is required"),
+  nickname: z.string().optional(),
   program: z.string().min(1, "Program is required"),
   company_name: z.string().optional(),
   target_hours: z.coerce

@@ -27,6 +27,7 @@ import { profileSchema, type ProfileInput } from "@/lib/validations/profile"
 interface SettingsFormProps {
   defaultValues: {
     full_name: string
+    nickname?: string | null
     program: string
     company_name: string | null
     target_hours: number
@@ -41,6 +42,7 @@ export function SettingsForm({ defaultValues }: SettingsFormProps) {
     resolver: zodResolver(profileSchema),
     defaultValues: {
       full_name: defaultValues.full_name,
+      nickname: defaultValues.nickname ?? "",
       program: defaultValues.program,
       company_name: defaultValues.company_name ?? "",
       target_hours: defaultValues.target_hours,
@@ -51,6 +53,7 @@ export function SettingsForm({ defaultValues }: SettingsFormProps) {
     startTransition(async () => {
       const formData = new FormData()
       formData.set("full_name", data.full_name)
+      formData.set("nickname", data.nickname ?? "")
       formData.set("program", data.program)
       formData.set("company_name", data.company_name ?? "")
       formData.set("target_hours", String(data.target_hours))
@@ -130,6 +133,28 @@ export function SettingsForm({ defaultValues }: SettingsFormProps) {
                           {...field}
                         />
                       </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="nickname"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Nickname (Optional)</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="What should we call you?"
+                          className="min-h-[44px]"
+                          {...field}
+                          value={field.value ?? ""}
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        Used for your dashboard greeting.
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}

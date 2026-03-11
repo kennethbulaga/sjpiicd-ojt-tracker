@@ -28,7 +28,7 @@ export default async function DashboardPage() {
   // Fetch user profile for target_hours
   const { data: profile } = await supabase
     .from("users")
-    .select("target_hours, full_name")
+    .select("target_hours, full_name, nickname")
     .eq("id", user.id)
     .single()
 
@@ -56,8 +56,9 @@ export default async function DashboardPage() {
 
   // Greeting
   const firstName =
-    profile?.full_name?.split(" ")[0] ??
-    user.user_metadata?.full_name?.split(" ")[0] ??
+    profile?.nickname ||
+    profile?.full_name?.split(" ")[0] ||
+    user.user_metadata?.full_name?.split(" ")[0] ||
     "Student"
 
   const greeting =

@@ -36,6 +36,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 import { createTimeEntry } from "@/actions/time-entries"
+import { DailyEntries } from "@/components/time-entry/DailyEntries"
 import {
   timeEntrySchema,
   sessionTypes,
@@ -205,6 +206,7 @@ export function QuickLogForm() {
                   <FormDescription>
                     Selecting Morning or Afternoon auto-fills the times.
                   </FormDescription>
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -300,6 +302,7 @@ export function QuickLogForm() {
             </Button>
           </form>
         </Form>
+        <DailyEntries dateLogged={form.watch("date_logged")} />
       </CardContent>
     </Card>
   )
