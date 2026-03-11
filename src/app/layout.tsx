@@ -4,7 +4,7 @@
 // As a Server Component, this file is rendered on the server, which means
 // the initial HTML is fully formed before it reaches the browser.
 import type { Metadata } from "next"
-import { Geist, Geist_Mono } from "next/font/google"
+import { Playfair_Display, Plus_Jakarta_Sans } from "next/font/google"
 import "./globals.css"
 
 // Note 2: ThemeProvider is a Client Component wrapper around next-themes.
@@ -21,14 +21,16 @@ import { Toaster } from "@/components/ui/sonner"
 // 1. Self-hosting the font files (no Google Fonts CDN request)
 // 2. Applying CSS `font-display: swap` for no layout shift
 // 3. Generating CSS custom properties (--font-geist-sans) for use in Tailwind
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const displayFont = Playfair_Display({
+  variable: "--font-display",
   subsets: ["latin"],
+  display: "swap",
 })
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const bodyFont = Plus_Jakarta_Sans({
+  variable: "--font-body",
   subsets: ["latin"],
+  display: "swap",
 })
 
 // Note 5: metadataBase resolves relative OG image paths to absolute URLs.
@@ -88,7 +90,7 @@ export default function RootLayout({
     // (class="dark" or class="light").
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${displayFont.variable} ${bodyFont.variable} antialiased font-body selection:bg-primary selection:text-primary-foreground`}
       >
         {/* Note 7: ThemeProvider configuration:
             - attribute="class": Adds "dark" class to <html> element, which
@@ -100,7 +102,7 @@ export default function RootLayout({
               transitions firing when the theme switches */}
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
+          defaultTheme="dark"
           enableSystem
           disableTransitionOnChange
         >
