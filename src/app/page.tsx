@@ -184,7 +184,7 @@ export default async function LandingPage({
             Support JP-Track
           </h2>
           <p className="text-muted-foreground font-body font-light mb-8 leading-relaxed">
-            JP-Track is an independent project built to take the headache out of OJT logging for JPCEANS. If this tool saves you time on paperwork, consider buying a coffee to keep the servers running!
+            Built independently to make OJT tracking seamless for JPCEANS. If this tool saves you time and effort, show some love by grabbing me a coffee.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-4" id="support">
             <Dialog>
