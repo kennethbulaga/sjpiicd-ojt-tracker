@@ -8,9 +8,9 @@
   /* Deep Oxford Blue Text */
   --foreground: oklch(28% 0.06 260);
 
-  /* Deep Royal Navy */
-  --primary: oklch(32% 0.12 260);
-  --primary-foreground: oklch(98% 0.01 90);
+  /* Cream Yellow */
+  --primary: oklch(86% 0.10 85);
+  --primary-foreground: oklch(28% 0.06 260);
 
   /* Soft Cream */
   --secondary: oklch(94% 0.015 90);
@@ -63,8 +63,8 @@
   --background: oklch(18% 0.04 260);
   --foreground: oklch(96% 0.01 90);
 
-  /* Soft Gold for primary actions on dark */
-  --primary: oklch(82% 0.12 80);
+  /* Strong Light Blue for primary actions on dark */
+  --primary: oklch(75% 0.14 240);
   --primary-foreground: oklch(18% 0.04 260);
 
   --secondary: oklch(22% 0.05 260);
@@ -74,14 +74,14 @@
   --muted-foreground: oklch(70% 0.03 260);
 
   --accent: oklch(25% 0.06 260);
-  --accent-foreground: oklch(82% 0.12 80);
+  --accent-foreground: oklch(75% 0.14 240);
 
   --destructive: oklch(65% 0.15 25);
   --destructive-foreground: oklch(18% 0.04 260);
 
   --border: oklch(28% 0.06 260);
   --input: oklch(28% 0.06 260);
-  --ring: oklch(82% 0.12 80);
+  --ring: oklch(75% 0.14 240);
 
   --card: oklch(20% 0.04 260);
   --card-foreground: oklch(96% 0.01 90);
@@ -91,12 +91,12 @@
 
   --sidebar: oklch(18% 0.04 260);
   --sidebar-foreground: oklch(96% 0.01 90);
-  --sidebar-primary: oklch(82% 0.12 80);
+  --sidebar-primary: oklch(75% 0.14 240);
   --sidebar-primary-foreground: oklch(18% 0.04 260);
   --sidebar-accent: oklch(25% 0.06 260);
   --sidebar-accent-foreground: oklch(96% 0.01 90);
   --sidebar-border: oklch(28% 0.06 260);
-  --sidebar-ring: oklch(82% 0.12 80);
+  --sidebar-ring: oklch(75% 0.14 240);
 
   --chart-1: oklch(82% 0.12 80);
   --chart-2: oklch(60% 0.15 260);
