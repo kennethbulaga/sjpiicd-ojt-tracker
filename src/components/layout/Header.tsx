@@ -8,7 +8,7 @@ import { ThemeToggle } from "@/components/layout/ThemeToggle"
 import { UserMenu } from "@/components/layout/UserMenu"
 import { PageTitle } from "@/components/layout/PageTitle"
 import { NavigationProgress } from "@/components/layout/NavigationProgress"
-import { Mascot } from "@/components/layout/Mascot"
+import { PhilosophicalAtom } from "@/components/layout/PhilosophicalAtom"
 
 export async function Header() {
   // Note 2: Fetch the authenticated user from Supabase using getUser().
@@ -44,7 +44,7 @@ export async function Header() {
     <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 relative">
       {/* Absolute centered interactive mascot */}
       <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50">
-        <Mascot />
+        <PhilosophicalAtom />
       </div>
 
       {/* Note 5: "h-14" (56px) matches the Material Design app bar height.

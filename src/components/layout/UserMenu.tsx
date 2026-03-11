@@ -26,6 +26,7 @@ import { Button } from "@/components/ui/button"
 // RPC (Remote Procedure Call) — it sends a POST request to the server,
 // executes the function, and processes the redirect.
 import { signOut } from "@/actions/auth"
+import { toast } from "sonner"
 
 // Note 5: Props interface defines the user data this component needs.
 // By accepting simple props (not fetching data itself), this Client Component
@@ -109,7 +110,7 @@ export function UserMenu({ userEmail, userName, userAvatar }: UserMenuProps) {
             failed to load. The "w-full" ensures the form takes full width
             so the entire menu item is clickable. */}
         <DropdownMenuItem asChild>
-          <form action={signOut} className="w-full">
+          <form action={signOut} className="w-full" onSubmit={() => toast.success("Successfully logged out. See you later!")}>
             <button
               type="submit"
               className="flex w-full items-center gap-2 cursor-pointer"

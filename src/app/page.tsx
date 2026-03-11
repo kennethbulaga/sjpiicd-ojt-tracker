@@ -9,6 +9,7 @@ import {
 } from "lucide-react"
 import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton"
 import { ThemeToggle } from "@/components/layout/ThemeToggle"
+import { PhilosophicalAtom } from "@/components/layout/PhilosophicalAtom"
 import { createAdminClient } from "@/lib/supabase/admin"
 import { headers } from "next/headers"
 import {
@@ -75,8 +76,9 @@ export default async function LandingPage({
         <div className="hero-grid hero-grid-fade absolute inset-0 z-0 opacity-[0.3] pointer-events-none" />
 
         {/* Hero Content (Centered Refinement) */}
-        <div className="w-full max-w-5xl px-6 py-20 md:py-32 flex flex-col items-center text-center relative z-10">
+        <div className="w-full max-w-5xl px-6 pt-10 pb-20 md:pt-16 md:pb-32 flex flex-col items-center text-center relative z-10">
           <div className="animate-fade-up flex flex-col items-center">
+            <div className="mb-6"><PhilosophicalAtom className="w-12 h-12 md:w-16 md:h-16" /></div>
             <span className="font-body text-xs md:text-sm font-semibold tracking-[0.2em] uppercase text-primary mb-6 drop-shadow-sm">
               Independent Student Initiative
             </span>
@@ -102,7 +104,7 @@ export default async function LandingPage({
                 </div>
               )}
 
-              <h3 className="font-display text-2xl tracking-wide mb-1 text-foreground">Secure Access</h3>
+              <h3 className="font-display text-2xl tracking-wide mb-1 text-foreground">Access JP-Track</h3>
               <p className="text-muted-foreground text-sm font-light leading-relaxed mb-6">
                 Authenticate via your academic Google Workspace credentials to proceed.
               </p>

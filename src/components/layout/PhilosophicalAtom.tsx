@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useCallback, useRef, useEffect } from "react"
-import Image from "next/image"
 
 const PhilosophicalQuestions = [
   "When you love someone deeply for years, are you loving the person they are right now, or are you continuously falling in love with the memory of who they were when you first met?",
@@ -16,7 +15,7 @@ const PhilosophicalQuestions = [
   "If you could perfectly preserve a single, beautiful memory to live inside forever, would it remain heaven, or would the lack of growth eventually turn it into a psychological hell?"
 ]
 
-export function Mascot() {
+export function PhilosophicalAtom({ className = "w-8 h-8" }: { className?: string }) {
   const [message, setMessage] = useState<string | null>(null)
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
@@ -52,21 +51,23 @@ export function Mascot() {
         </div>
       )}
 
-      {/* Mascot Image Toggle - Ambient infinite spin for mobile consistency */}
+      {/* Atom Toggle - Ambient infinite spin for mobile consistency */}
       <button 
         type="button" 
         onClick={handleClick}
         className="relative hover:scale-110 active:scale-95 transition-transform cursor-pointer"
         aria-label="Interact for a philosophical thought"
       >
-        <Image 
-          src="/cute-svg/genetic-data-svgrepo-com.svg" 
-          alt="Philosophical Atom" 
-          width={32} 
-          height={32} 
-          className="w-8 h-8 drop-shadow-sm opacity-90 animate-[spin_10s_linear_infinite]"
-          priority
-        />
+        <svg 
+          viewBox="0 0 1024 1024" 
+          className={`${className} drop-shadow-sm opacity-90 animate-[spin_10s_linear_infinite]`}
+          aria-label="Philosophical Atom"
+        >
+          <path d="M512 960c-92.8 0-160-200-160-448S419.2 64 512 64s160 200 160 448-67.2 448-160 448z m0-32c65.6 0 128-185.6 128-416S577.6 96 512 96s-128 185.6-128 416 62.4 416 128 416z" className="text-[#050D42] dark:text-blue-300" fill="currentColor" />
+          <path d="M124.8 736c-48-80 92.8-238.4 307.2-363.2S852.8 208 899.2 288 806.4 526.4 592 651.2 171.2 816 124.8 736z m27.2-16c33.6 57.6 225.6 17.6 424-97.6S905.6 361.6 872 304 646.4 286.4 448 401.6 118.4 662.4 152 720z" className="text-[#050D42] dark:text-blue-300" fill="currentColor" />
+          <path d="M899.2 736c-46.4 80-254.4 38.4-467.2-84.8S76.8 368 124.8 288s254.4-38.4 467.2 84.8S947.2 656 899.2 736z m-27.2-16c33.6-57.6-97.6-203.2-296-318.4S184 246.4 152 304 249.6 507.2 448 622.4s392 155.2 424 97.6z" className="text-[#050D42] dark:text-blue-300" fill="currentColor" />
+          <path d="M512 592c-44.8 0-80-35.2-80-80s35.2-80 80-80 80 35.2 80 80-35.2 80-80 80zM272 312c-27.2 0-48-20.8-48-48s20.8-48 48-48 48 20.8 48 48-20.8 48-48 48zM416 880c-27.2 0-48-20.8-48-48s20.8-48 48-48 48 20.8 48 48-20.8 48-48 48z m448-432c-27.2 0-48-20.8-48-48s20.8-48 48-48 48 20.8 48 48-20.8 48-48 48z" className="text-[#2F4BFF] dark:text-blue-400" fill="currentColor" />
+        </svg>
       </button>
     </div>
   )
