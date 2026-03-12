@@ -15,34 +15,57 @@ const PhilosophicalQuestions = [
   "If you could perfectly preserve a single, beautiful memory to live inside forever, would it remain heaven, or would the lack of growth eventually turn it into a psychological hell?"
 ]
 
+const SHOW_DURATION = 10000  // 10 seconds visible
+const HIDE_DURATION = 15000  // 15 seconds hidden
+
 export function PhilosophicalAtom({ className = "w-8 h-8" }: { className?: string }) {
   const [message, setMessage] = useState<string | null>(null)
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const showTimerRef = useRef<NodeJS.Timeout | null>(null)
+  const hideTimerRef = useRef<NodeJS.Timeout | null>(null)
+  const lastIndexRef = useRef<number>(-1)
 
-  const handleClick = useCallback(() => {
-    // Clear any existing timeout so quick clicks don't prematurely close the new message
-    if (timeoutRef.current) clearTimeout(timeoutRef.current)
+  // Pick a random question different from the last one shown
+  const pickRandom = useCallback(() => {
+    let idx: number
+    do {
+      idx = Math.floor(Math.random() * PhilosophicalQuestions.length)
+    } while (idx === lastIndexRef.current && PhilosophicalQuestions.length > 1)
+    lastIndexRef.current = idx
+    return PhilosophicalQuestions[idx]
+  }, [])
 
-    // Pick a random philosophical question
-    const randomMsg = PhilosophicalQuestions[Math.floor(Math.random() * PhilosophicalQuestions.length)]
-    setMessage(randomMsg)
-    
-    // Give the user 8.5 seconds to read the complex text
-    timeoutRef.current = setTimeout(() => {
+  // Clear all pending timers
+  const clearTimers = useCallback(() => {
+    if (showTimerRef.current) clearTimeout(showTimerRef.current)
+    if (hideTimerRef.current) clearTimeout(hideTimerRef.current)
+  }, [])
+
+  // Schedule: show message → hide after SHOW_DURATION → wait HIDE_DURATION → repeat
+  const scheduleCycle = useCallback(() => {
+    clearTimers()
+    const msg = pickRandom()
+    setMessage(msg)
+
+    hideTimerRef.current = setTimeout(() => {
       setMessage(null)
-    }, 8500)
-  }, [])
+      showTimerRef.current = setTimeout(scheduleCycle, HIDE_DURATION)
+    }, SHOW_DURATION)
+  }, [pickRandom, clearTimers])
 
-  // Cleanup on unmount
+  // Auto-start: first message appears after initial HIDE_DURATION delay
   useEffect(() => {
-    return () => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current)
-    }
-  }, [])
+    showTimerRef.current = setTimeout(scheduleCycle, HIDE_DURATION)
+    return clearTimers
+  }, [scheduleCycle, clearTimers])
+
+  // Manual click: show immediately and restart the cycle from this point
+  const handleClick = useCallback(() => {
+    scheduleCycle()
+  }, [scheduleCycle])
 
   return (
     <div className="relative flex items-center justify-center">
-      {/* Speech Bubble - Designed for heavy text blocks and viewport edge collision safety */}
+      {/* Speech Bubble */}
       {message && (
         <div className="absolute top-[140%] left-1/2 -translate-x-1/2 w-[300px] sm:w-[340px] rounded-xl bg-foreground/95 backdrop-blur-sm px-4 py-3.5 text-[11px] sm:text-xs leading-relaxed font-medium text-background shadow-xl animate-in fade-in slide-in-from-top-2 z-[60] text-center text-balance transition-all hover:bg-foreground hover:scale-105 duration-300">
           {message}
@@ -51,7 +74,7 @@ export function PhilosophicalAtom({ className = "w-8 h-8" }: { className?: strin
         </div>
       )}
 
-      {/* Atom Toggle - Ambient infinite spin for mobile consistency */}
+      {/* Atom Toggle */}
       <button 
         type="button" 
         onClick={handleClick}
