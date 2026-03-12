@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/server"
 import { getPhilippineNow } from "@/lib/utils"
 import { ProgressRing } from "@/components/dashboard/ProgressRing"
 import { StatsCards } from "@/components/dashboard/StatsCards"
+import { ActivityCalendar } from "@/components/dashboard/ActivityCalendar"
 import { RecentEntries } from "@/components/time-entry/RecentEntries"
 import { FloatingActionButton } from "@/components/dashboard/FloatingActionButton"
 import { Button } from "@/components/ui/button"
@@ -42,7 +43,10 @@ export default async function DashboardPage() {
 
   const totalMinutes = entries?.reduce((sum, e) => sum + (e.total_minutes ?? 0), 0) ?? 0
   const hoursCompleted = totalMinutes / 60
-  const totalEntries = entries?.length ?? 0
+
+  // Unique days with logs (for days-remaining calculation)
+  const loggedDates = [...new Set(entries?.map((e) => e.date_logged).filter(Boolean) ?? [])]
+  const uniqueDaysLogged = loggedDates.length
 
   // Get Philippine date/time for server-side calculations
   const phNow = getPhilippineNow()
@@ -100,8 +104,8 @@ export default async function DashboardPage() {
             <StatsCards
               hoursCompleted={hoursCompleted}
               targetHours={targetHours}
-              totalEntries={totalEntries}
               todayMinutes={todayMinutes}
+              uniqueDaysLogged={uniqueDaysLogged}
             />
           </div>
         </div>
@@ -117,7 +121,10 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      {/* Recent Entries (reuse from /log page) */}
+      {/* Activity Calendar */}
+      <ActivityCalendar loggedDates={loggedDates} />
+
+      {/* Recent Entries */}
       <Suspense
         fallback={
           <div className="animate-pulse rounded-xl border bg-card p-6 shadow-sm space-y-4">
