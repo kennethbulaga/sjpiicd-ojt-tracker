@@ -137,17 +137,17 @@ export function QuickLogForm() {
   }
 
   return (
-    <Card className="rounded-xl shadow-sm">
-      <CardHeader className="pb-4">
-        <CardTitle className="flex items-center gap-2 text-lg">
-          <Clock className="size-5 text-primary" />
+    <Card className="rounded-xl shadow-sm py-3 px-0 sm:py-5">
+      <CardHeader className="space-y-0 pb-3 sm:pb-4 px-3 sm:px-5">
+        <CardTitle className="flex items-center gap-1.5 sm:gap-2 text-[15px] sm:text-lg">
+          <Clock className="size-4 sm:size-5 text-primary" />
           Quick Log
         </CardTitle>
       </CardHeader>
 
-      <CardContent>
+      <CardContent className="px-3 sm:px-5">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 sm:space-y-5">
             {/* Date Picker */}
             <FormField
               control={form.control}

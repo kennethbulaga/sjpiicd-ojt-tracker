@@ -19,14 +19,14 @@ export function ActivityCalendar({ loggedDates }: ActivityCalendarProps) {
   )
 
   return (
-    <Card className="rounded-xl shadow-sm">
-      <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle className="text-sm font-medium text-muted-foreground">
+    <Card className="rounded-xl shadow-sm py-3 px-0 sm:py-5">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 sm:pb-2 px-3 sm:px-5">
+        <CardTitle className="text-[11px] sm:text-sm font-medium text-muted-foreground">
           Activity Calendar
         </CardTitle>
-        <CalendarDays className="size-4 text-muted-foreground" />
+        <CalendarDays className="size-3.5 sm:size-4 shrink-0 text-muted-foreground" />
       </CardHeader>
-      <CardContent className="flex justify-center">
+      <CardContent className="flex justify-center px-3 sm:px-5">
         <Calendar
           mode="multiple"
           selected={loggedDateObjects}

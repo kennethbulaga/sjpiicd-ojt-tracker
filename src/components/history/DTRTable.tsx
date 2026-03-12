@@ -181,9 +181,9 @@ export function DTRTable({ entries }: DTRTableProps) {
       )}
 
       {filteredEntries.length === 0 ? (
-        <Card className="rounded-xl shadow-sm">
-          <CardContent className="py-12 text-center">
-            <p className="text-muted-foreground">
+        <Card className="rounded-xl shadow-sm py-4 sm:py-0">
+          <CardContent className="py-8 sm:py-12 text-center">
+            <p className="text-[13px] sm:text-sm text-muted-foreground">
               No entries match your filters.
             </p>
           </CardContent>
@@ -264,7 +264,7 @@ export function DTRTable({ entries }: DTRTableProps) {
           </div>
 
           {/* Mobile card view */}
-          <div className="space-y-3 md:hidden">
+          <div className="space-y-3 sm:space-y-4 md:hidden">
             {paginatedDates.map((date) => {
               const dateEntries = groupedEntries.get(date)!
               const dailyMinutes = dateEntries.reduce(
@@ -279,18 +279,18 @@ export function DTRTable({ entries }: DTRTableProps) {
                   {/* Date header (clickable to expand/collapse if multiple entries) */}
                   <button
                     type="button"
-                    className="flex w-full items-center justify-between p-4"
+                    className="flex w-full items-center justify-between p-3 sm:p-4 hover:bg-muted/30 transition-colors"
                     onClick={() => toggleDateExpanded(date)}
                     disabled={dateEntries.length === 1}
                   >
                     <div className="text-left">
-                      <p className="font-semibold">
+                      <p className="font-semibold text-[13px] sm:text-base">
                         {format(
                           new Date(date + "T00:00:00"),
                           "EEEE, MMM d, yyyy"
                         )}
                       </p>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-[11px] sm:text-sm text-muted-foreground mt-0.5 sm:mt-0">
                         {dateEntries.length} session
                         {dateEntries.length > 1 ? "s" : ""} ·{" "}
                         {formatMinutes(dailyMinutes)}
@@ -298,46 +298,49 @@ export function DTRTable({ entries }: DTRTableProps) {
                     </div>
                     {dateEntries.length > 1 &&
                       (isExpanded ? (
-                        <ChevronUp className="size-4 text-muted-foreground" />
+                        <ChevronUp className="size-4 text-muted-foreground mr-1" />
                       ) : (
-                        <ChevronDown className="size-4 text-muted-foreground" />
+                        <ChevronDown className="size-4 text-muted-foreground mr-1" />
                       ))}
                   </button>
 
                   {/* Entries */}
                   {isExpanded && (
-                    <CardContent className="space-y-3 pt-0">
+                    <CardContent className="space-y-2 sm:space-y-3 pt-0 px-3 pb-3 sm:px-4 sm:pb-4">
                       {dateEntries.map((entry) => (
                         <div
                           key={entry.id}
-                          className="group flex items-start justify-between rounded-lg border p-3"
+                          className="group flex items-start justify-between rounded-lg border p-2.5 sm:p-3 bg-muted/10 hover:bg-muted/30 transition-colors"
                         >
-                          <div className="space-y-1">
-                            <div className="flex items-center gap-2">
+                          <div className="space-y-1 sm:space-y-1.5 flex-1 min-w-0 pr-2">
+                            <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
                               <Badge
                                 variant={
                                   SESSION_BADGE_VARIANT[
                                     entry.session_type as SessionType
                                   ] ?? "outline"
                                 }
+                                className="text-[10px] sm:text-xs px-1.5 py-0 sm:px-2.5 sm:py-0.5"
                               >
                                 {entry.session_type}
                               </Badge>
-                              <span className="text-sm font-medium">
+                              <span className="text-[12px] sm:text-sm font-medium">
                                 {formatMinutes(entry.total_minutes)}
                               </span>
                             </div>
-                            <p className="text-sm text-muted-foreground">
+                            <p className="text-[11px] sm:text-sm text-muted-foreground">
                               {formatTime(entry.time_in)} –{" "}
                               {formatTime(entry.time_out)}
                             </p>
                             {entry.task_description && (
-                              <p className="text-xs text-muted-foreground/80 line-clamp-2">
+                              <p className="text-[10px] sm:text-xs text-muted-foreground/80 line-clamp-2">
                                 {entry.task_description}
                               </p>
                             )}
                           </div>
-                          <DeleteEntryButton entryId={entry.id} />
+                          <div className="pt-0.5">
+                            <DeleteEntryButton entryId={entry.id} />
+                          </div>
                         </div>
                       ))}
                     </CardContent>

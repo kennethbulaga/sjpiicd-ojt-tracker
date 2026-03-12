@@ -65,18 +65,21 @@ export function StatsCards({
   return (
     <div className="grid grid-cols-2 gap-3">
       {stats.map((stat) => (
-        <Card key={stat.label} className="rounded-xl shadow-sm">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-xs font-medium text-muted-foreground sm:text-sm flex items-center gap-1">
-              {stat.label}
+        <Card 
+          key={stat.label} 
+          className="flex flex-col rounded-xl shadow-sm py-3 px-0 gap-2 sm:py-5 sm:gap-4"
+        >
+          <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-1 sm:pb-2 px-3 sm:px-5">
+            <CardTitle className="text-[11px] font-medium text-muted-foreground sm:text-sm flex items-start gap-1">
+              <span className="leading-tight">{stat.label}</span>
               {"hasInfo" in stat && stat.hasInfo && (
                 <Popover>
                   <PopoverTrigger asChild>
                     <button
-                      className="inline-flex items-center justify-center rounded-full text-muted-foreground/60 hover:text-muted-foreground transition-colors"
+                      className="inline-flex shrink-0 items-center justify-center rounded-full text-muted-foreground/60 transition-colors hover:text-muted-foreground"
                       aria-label="How is this calculated?"
                     >
-                      <HelpCircle className="size-3.5" />
+                      <HelpCircle className="size-3 lg:size-3.5" />
                     </button>
                   </PopoverTrigger>
                   <PopoverContent
@@ -94,11 +97,11 @@ export function StatsCards({
                 </Popover>
               )}
             </CardTitle>
-            <stat.icon className="size-4 text-muted-foreground" />
+            <stat.icon className="size-3.5 sm:size-4 shrink-0 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
-            <p className="text-xl font-bold sm:text-2xl">{stat.value}</p>
-            <p className="mt-0.5 text-xs text-muted-foreground">
+          <CardContent className="mt-auto px-3 sm:px-5">
+            <p className="text-lg font-bold sm:text-2xl">{stat.value}</p>
+            <p className="mt-0.5 text-[10px] sm:text-xs text-muted-foreground leading-tight">
               {stat.description}
             </p>
           </CardContent>
