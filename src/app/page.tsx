@@ -11,7 +11,7 @@ import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton"
 import { ThemeToggle } from "@/components/layout/ThemeToggle"
 import { PhilosophicalAtom } from "@/components/layout/PhilosophicalAtom"
 import { createAdminClient } from "@/lib/supabase/admin"
-import { headers } from "next/headers"
+
 import {
   Dialog,
   DialogContent,
@@ -28,9 +28,7 @@ export default async function LandingPage({
   searchParams: Promise<{ error?: string }>
 }) {
   const params = await searchParams
-  const headersList = await headers()
-  const userAgent = headersList.get("user-agent") || ""
-  const isInAppBrowser = /FBAN|FBAV|Instagram|Line|Twitter|Snapchat/i.test(userAgent)
+
 
   // Fetch distinct companies with student count for the landing page showcase
   const supabase = createAdminClient()
@@ -109,14 +107,7 @@ export default async function LandingPage({
                 Authenticate via your academic Google Workspace credentials to proceed.
               </p>
 
-              {isInAppBrowser && (
-                <div className="mb-6 flex items-start gap-3 rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-600 dark:text-amber-400 font-medium">
-                  <Shield className="mt-0.5 size-5 shrink-0" />
-                  <span>
-                    <strong>In-App Browser Detected:</strong> Google Sign-In is blocked here. Please tap the corner menu (•••) and select &quot;Open in system browser&quot; (Safari/Chrome) to log in.
-                  </span>
-                </div>
-              )}
+
 
               <div className="w-full">
                 <GoogleSignInButton />
