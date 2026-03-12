@@ -87,36 +87,36 @@ export function SettingsForm({ defaultValues }: SettingsFormProps) {
   return (
     <div className="space-y-6">
       {/* Account Info (read-only) */}
-      <Card className="rounded-xl shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-lg">Account</CardTitle>
-          <CardDescription>
+      <Card className="rounded-xl shadow-sm py-3 px-0 sm:py-5">
+        <CardHeader className="space-y-1.5 pb-3 sm:pb-4 px-3 sm:px-5">
+          <CardTitle className="text-[15px] sm:text-lg">Account</CardTitle>
+          <CardDescription className="text-[11px] sm:text-sm">
             Your Google Workspace account information.
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-3 sm:px-5">
           <div className="space-y-1">
-            <p className="text-sm font-medium text-muted-foreground">Email</p>
-            <p className="text-sm font-semibold">{defaultValues.email}</p>
+            <p className="text-[12px] sm:text-sm font-medium text-muted-foreground">Email</p>
+            <p className="text-[13px] sm:text-sm font-semibold">{defaultValues.email}</p>
           </div>
         </CardContent>
       </Card>
 
       {/* Editable Profile */}
-      <Card className="rounded-xl shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-lg">Profile</CardTitle>
-          <CardDescription>
+      <Card className="rounded-xl shadow-sm py-3 px-0 sm:py-5">
+        <CardHeader className="space-y-1.5 pb-3 sm:pb-4 px-3 sm:px-5">
+          <CardTitle className="text-[15px] sm:text-lg">Profile</CardTitle>
+          <CardDescription className="text-[11px] sm:text-sm">
             Update your personal information and OJT configuration.
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-3 sm:px-5">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5 sm:space-y-6">
               {/* Personal Information */}
-              <div className="space-y-4">
-                <h3 className="flex items-center gap-2 text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-                  <User className="size-4" />
+              <div className="space-y-3 sm:space-y-4">
+                <h3 className="flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                  <User className="size-3.5 sm:size-4" />
                   Personal Information
                 </h3>
 
@@ -185,9 +185,9 @@ export function SettingsForm({ defaultValues }: SettingsFormProps) {
               <Separator />
 
               {/* OJT Configuration */}
-              <div className="space-y-4">
-                <h3 className="flex items-center gap-2 text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-                  <Building2 className="size-4" />
+              <div className="space-y-3 sm:space-y-4">
+                <h3 className="flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                  <Building2 className="size-3.5 sm:size-4" />
                   OJT Details
                 </h3>
 
@@ -197,10 +197,7 @@ export function SettingsForm({ defaultValues }: SettingsFormProps) {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        Company / Organization{" "}
-                        <span className="font-normal text-muted-foreground">
-                          (optional)
-                        </span>
+                        Company / Organization
                       </FormLabel>
                       <FormControl>
                         <CompanyCombobox
@@ -221,9 +218,9 @@ export function SettingsForm({ defaultValues }: SettingsFormProps) {
               <Separator />
 
               {/* Target Hours */}
-              <div className="space-y-4">
-                <h3 className="flex items-center gap-2 text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-                  <Target className="size-4" />
+              <div className="space-y-3 sm:space-y-4">
+                <h3 className="flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                  <Target className="size-3.5 sm:size-4" />
                   Target Hours
                 </h3>
 

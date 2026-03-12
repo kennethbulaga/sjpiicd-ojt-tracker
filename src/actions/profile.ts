@@ -24,10 +24,10 @@ export async function updateProfile(formData: FormData) {
   }
 
   const raw = {
-    full_name: formData.get("full_name"),
+    full_name: formData.get("full_name") || "",
     nickname: formData.get("nickname") || null,
-    program: formData.get("program"),
-    company_name: formData.get("company_name") || undefined,
+    program: formData.get("program") || "",
+    company_name: formData.get("company_name") || "",
     target_hours: formData.get("target_hours"),
   }
 

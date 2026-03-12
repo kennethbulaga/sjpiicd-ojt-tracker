@@ -6,7 +6,7 @@ export const profileSchema = z.object({
   full_name: z.string().min(1, "Full name is required"),
   nickname: z.string().optional(),
   program: z.string().min(1, "Program is required"),
-  company_name: z.string().optional(),
+  company_name: z.string().min(1, "Company is required"),
   target_hours: z
     .number({ error: "Enter a valid number" })
     .int("Must be a whole number")
@@ -20,7 +20,7 @@ export const profileServerSchema = z.object({
   full_name: z.string().min(1, "Full name is required"),
   nickname: z.string().optional(),
   program: z.string().min(1, "Program is required"),
-  company_name: z.string().optional(),
+  company_name: z.string().min(1, "Company is required"),
   target_hours: z.coerce
     .number()
     .int()
