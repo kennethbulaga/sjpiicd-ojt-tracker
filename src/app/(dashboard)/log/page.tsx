@@ -30,8 +30,19 @@ export default function LogPage() {
       <h1 className="mb-6 text-2xl font-bold">Log Hours</h1>
 
       <div className="grid gap-6 lg:grid-cols-[1fr_1fr]">
-        {/* Left: Quick Log Form */}
-        <QuickLogForm />
+        {/* Left: Quick Log Form — wrapped in Suspense for useSearchParams */}
+        <Suspense fallback={
+          <div className="animate-pulse rounded-xl border bg-card p-6 shadow-sm space-y-4">
+            <div className="h-6 w-32 rounded-md bg-muted" />
+            <div className="space-y-3">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="h-11 rounded-md bg-muted" />
+              ))}
+            </div>
+          </div>
+        }>
+          <QuickLogForm />
+        </Suspense>
 
         {/* Right: Recent Entries (server-fetched, streamed in) */}
         <Suspense fallback={<RecentEntriesSkeleton />}>

@@ -1,7 +1,8 @@
 "use client"
 
-import { useTransition } from "react"
+import { useState, useTransition } from "react"
 import { useForm } from "react-hook-form"
+import { useSearchParams } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { format } from "date-fns"
 import { CalendarIcon, Clock, Loader2 } from "lucide-react"
@@ -44,13 +45,26 @@ import {
 } from "@/lib/validations/time-entry"
 import { SMART_DEFAULTS } from "@/lib/constants"
 
+// Silently update URL without triggering navigation
+function updateDateParam(date: string) {
+  const url = new URL(window.location.href)
+  url.searchParams.set("date", date)
+  window.history.replaceState({}, "", url.toString())
+}
+
 export function QuickLogForm() {
   const [isPending, startTransition] = useTransition()
+  const searchParams = useSearchParams()
+  // Refresh key: increment to force DailyEntries to remount and refetch
+  const [refreshKey, setRefreshKey] = useState(0)
+
+  // Persist date in URL: read from ?date= param, fallback to today
+  const initialDate = searchParams.get("date") || format(new Date(), "yyyy-MM-dd")
 
   const form = useForm<TimeEntryInput>({
     resolver: zodResolver(timeEntrySchema),
     defaultValues: {
-      date_logged: format(new Date(), "yyyy-MM-dd"),
+      date_logged: initialDate,
       time_in: SMART_DEFAULTS.MORNING.time_in + ":00",
       time_out: SMART_DEFAULTS.MORNING.time_out + ":00",
       session_type: "Morning",
@@ -107,6 +121,9 @@ export function QuickLogForm() {
       toast.success("Hours logged!", {
         description: `${data.session_type} session on ${format(new Date(data.date_logged + "T00:00:00"), "MMM d, yyyy")}`,
       })
+
+      // Force DailyEntries to remount and refetch (ensures entry appears immediately)
+      setRefreshKey((k) => k + 1)
 
       // Reset form but keep the date and session type for quick re-entry
       form.reset({
@@ -168,7 +185,9 @@ export function QuickLogForm() {
                         }
                         onSelect={(date) => {
                           if (date) {
-                            field.onChange(format(date, "yyyy-MM-dd"))
+                            const dateStr = format(date, "yyyy-MM-dd")
+                            field.onChange(dateStr)
+                            updateDateParam(dateStr)
                           }
                         }}
                         disabled={(date) => date > new Date()}
@@ -302,7 +321,7 @@ export function QuickLogForm() {
             </Button>
           </form>
         </Form>
-        <DailyEntries dateLogged={form.watch("date_logged")} />
+        <DailyEntries key={refreshKey} dateLogged={form.watch("date_logged")} />
       </CardContent>
     </Card>
   )
