@@ -16,7 +16,7 @@ const PhilosophicalQuestions = [
 ]
 
 const SHOW_DURATION = 10000  // 10 seconds visible
-const HIDE_DURATION = 15000  // 15 seconds hidden
+const HIDE_DURATION = 20000  // 20 seconds hidden
 
 export function PhilosophicalAtom({ className = "w-8 h-8" }: { className?: string }) {
   const [message, setMessage] = useState<string | null>(null)
@@ -75,14 +75,14 @@ export function PhilosophicalAtom({ className = "w-8 h-8" }: { className?: strin
       )}
 
       {/* Atom Toggle */}
-      <button 
-        type="button" 
+      <button
+        type="button"
         onClick={handleClick}
         className="relative hover:scale-110 active:scale-95 transition-transform cursor-pointer"
         aria-label="Interact for a philosophical thought"
       >
-        <svg 
-          viewBox="0 0 1024 1024" 
+        <svg
+          viewBox="0 0 1024 1024"
           className={`${className} drop-shadow-sm opacity-90 animate-[spin_10s_linear_infinite]`}
           aria-label="Philosophical Atom"
         >
