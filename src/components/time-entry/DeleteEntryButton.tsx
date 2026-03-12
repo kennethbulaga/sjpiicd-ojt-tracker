@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useTransition } from "react"
+import { useRouter } from "next/navigation"
 import { Loader2, Trash2 } from "lucide-react"
 import { toast } from "sonner"
 
@@ -20,11 +21,13 @@ import { deleteTimeEntry } from "@/actions/time-entries"
 
 interface DeleteEntryButtonProps {
   entryId: string
+  onDelete?: () => void
 }
 
-export function DeleteEntryButton({ entryId }: DeleteEntryButtonProps) {
+export function DeleteEntryButton({ entryId, onDelete }: DeleteEntryButtonProps) {
   const [isPending, startTransition] = useTransition()
   const [open, setOpen] = useState(false)
+  const router = useRouter()
 
   function handleDelete() {
     startTransition(async () => {
@@ -40,6 +43,10 @@ export function DeleteEntryButton({ entryId }: DeleteEntryButtonProps) {
 
       toast.success("Entry deleted")
       setOpen(false)
+      // Notify parent to remove entry from local state (optimistic removal)
+      onDelete?.()
+      // Force full page re-render for server components (e.g., RecentEntries)
+      router.refresh()
     })
   }
 

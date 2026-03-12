@@ -148,7 +148,12 @@ export function DailyEntries({ dateLogged }: { dateLogged: string }) {
               )}
             </div>
 
-            <DeleteEntryButton entryId={entry.id} />
+            <DeleteEntryButton 
+              entryId={entry.id} 
+              onDelete={() => {
+                setEntries(prev => prev.filter(e => e.id !== entry.id))
+              }}
+            />
           </div>
         ))}
       </div>
