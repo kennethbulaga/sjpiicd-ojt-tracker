@@ -25,9 +25,9 @@ export function StatsCards({
   const hoursRemaining = Math.max(0, targetHours - hoursCompleted)
   const todayHours = todayMinutes / 60
 
-  // Calculate estimated working days remaining based on student's actual pace
-  const avgHoursPerDay = uniqueDaysLogged > 0 ? hoursCompleted / uniqueDaysLogged : 8
-  const daysRemaining = hoursRemaining > 0 ? Math.ceil(hoursRemaining / avgHoursPerDay) : 0
+  // Calculate estimated working days remaining based on a constant 8 hours per day
+  const constantHoursPerDay = 8
+  const daysRemaining = hoursRemaining > 0 ? Math.ceil(hoursRemaining / constantHoursPerDay) : 0
 
   // Estimated finish date — excludes weekends (Sat/Sun)
   const estimatedFinishDate = daysRemaining > 0
@@ -45,14 +45,14 @@ export function StatsCards({
       label: "Hours Remaining",
       value: Math.ceil(hoursRemaining).toString(),
       icon: Target,
-      description: daysRemaining > 0 ? `~${daysRemaining} days left at your pace` : `of ${targetHours}h target`,
+      description: daysRemaining > 0 ? `~${daysRemaining} days left at 8h/day` : `of ${targetHours}h target`,
       hasInfo: daysRemaining > 0,
     },
     {
       label: "Est. Finish Date",
       value: estimatedFinishDate ?? "—",
       icon: CalendarClock,
-      description: estimatedFinishDate ? "Based on your current pace" : "Start logging to see estimate",
+      description: estimatedFinishDate ? "Based on an 8h/day pace" : "Start logging to see estimate",
     },
     {
       label: "Today",
@@ -89,9 +89,8 @@ export function StatsCards({
                   >
                     <p className="font-semibold mb-1">How is this calculated?</p>
                     <p className="text-muted-foreground">
-                      Based on your average of <strong>{avgHoursPerDay.toFixed(1)}h</strong> per
-                      logging day across <strong>{uniqueDaysLogged}</strong> days. This divides
-                      your remaining {Math.ceil(hoursRemaining)}h by your daily average.
+                      Based on a constant <strong>8h</strong> maximum per day. This divides
+                      your remaining {Math.ceil(hoursRemaining)}h by 8 hours.
                     </p>
                   </PopoverContent>
                 </Popover>
