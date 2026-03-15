@@ -19,18 +19,22 @@ export function NavigationProgress() {
   const prevPathname = useRef(pathname)
   const completingTimer = useRef<ReturnType<typeof setTimeout>>(undefined)
 
-  // When pathname changes → complete the bar
+  // When pathname changes -> complete the bar
   useEffect(() => {
     if (prevPathname.current !== pathname) {
       prevPathname.current = pathname
 
-      // If we were loading, transition to completing (bar fills to 100%)
-      setState((prev) => {
-        if (prev === "loading") {
-          return "completing"
-        }
-        return prev
-      })
+      // Defer the transition to avoid synchronous setState inside effect body.
+      const completeTimer = setTimeout(() => {
+        setState((prev) => {
+          if (prev === "loading") {
+            return "completing"
+          }
+          return prev
+        })
+      }, 0)
+
+      return () => clearTimeout(completeTimer)
     }
   }, [pathname])
 

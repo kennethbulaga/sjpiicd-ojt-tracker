@@ -1,6 +1,6 @@
 "use client"
 
-import { Clock, CalendarCheck, Target, TrendingUp, HelpCircle, CalendarClock } from "lucide-react"
+import { Clock, Target, TrendingUp, HelpCircle, CalendarClock } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   Popover,
@@ -110,3 +110,4 @@ export function StatsCards({
     </div>
   )
 }
+

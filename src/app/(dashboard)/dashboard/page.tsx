@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation"
 import { Suspense } from "react"
 import Link from "next/link"
-import { Plus, Building2 } from "lucide-react"
+import { Building2 } from "lucide-react"
 
 import { createClient } from "@/lib/supabase/server"
 import { getPhilippineNow } from "@/lib/utils"
@@ -148,3 +148,4 @@ export default async function DashboardPage() {
     </div>
   )
 }
+

@@ -182,7 +182,7 @@ export default async function LandingPage({
           <div className="flex flex-wrap items-center justify-center gap-4" id="support">
             <Dialog>
               <DialogTrigger asChild>
-                <button className="inline-flex items-center gap-2 rounded-full bg-[#007DFE]/10 text-[#0060C0] dark:text-[#52A8FF] hover:bg-[#007DFE]/20 px-6 py-2.5 text-sm font-semibold transition-all duration-300 hover:-translate-y-0.5">
+                <button className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-6 py-2.5 text-sm font-semibold text-primary transition-all duration-300 hover:-translate-y-0.5 hover:bg-primary/20">
                   <Coffee className="size-4" />
                   <span>Fuel via GCash</span>
                 </button>
@@ -207,7 +207,7 @@ export default async function LandingPage({
             </Dialog>
             <Dialog>
               <DialogTrigger asChild>
-                <button className="inline-flex items-center gap-2 rounded-full bg-[#00D1FF]/10 text-[#0070C0] dark:text-[#00D1FF] hover:bg-[#00D1FF]/20 px-6 py-2.5 text-sm font-semibold transition-all duration-300 hover:-translate-y-0.5">
+                <button className="inline-flex items-center gap-2 rounded-full border border-accent/40 bg-accent/20 px-6 py-2.5 text-sm font-semibold text-accent-foreground transition-all duration-300 hover:-translate-y-0.5 hover:bg-accent/35">
                   <Coffee className="size-4" />
                   <span>Support via GoTyme</span>
                 </button>
@@ -251,3 +251,4 @@ export default async function LandingPage({
     </div>
   )
 }
+

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useTransition } from "react"
-import { useForm } from "react-hook-form"
+import { useForm, useWatch } from "react-hook-form"
 import { useSearchParams } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { format } from "date-fns"
@@ -70,6 +70,11 @@ export function QuickLogForm() {
       session_type: "Morning",
       task_description: "",
     },
+  })
+
+  const selectedDate = useWatch({
+    control: form.control,
+    name: "date_logged",
   })
 
   // Apply smart defaults when session type changes
@@ -321,8 +326,10 @@ export function QuickLogForm() {
             </Button>
           </form>
         </Form>
-        <DailyEntries key={refreshKey} dateLogged={form.watch("date_logged")} />
+        <DailyEntries key={refreshKey} dateLogged={selectedDate ?? initialDate} />
       </CardContent>
     </Card>
   )
 }
+
+

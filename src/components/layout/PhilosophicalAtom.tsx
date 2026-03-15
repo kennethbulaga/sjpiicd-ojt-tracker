@@ -4,32 +4,32 @@ import { useState, useCallback, useRef, useEffect } from "react"
 
 const PhilosophicalQuestions = [
   "Did you really lose the person, or did you lose the version of the future you imagined with them?",
-  "When someone leaves your life, is the pain about losing them—or realizing you meant less to them than they meant to you?",
+  "When someone leaves your life, is the pain about losing them�or realizing you meant less to them than they meant to you?",
   "If someone truly loved you, would they ever put you in a position where you had to question it?",
   "Do people fall out of love suddenly, or do they slowly stop choosing each other?",
-  "When a relationship ends, is closure something the other person gives—or something you eventually give yourself?",
+  "When a relationship ends, is closure something the other person gives�or something you eventually give yourself?",
   "What hurts more: making the wrong decision, or never knowing what could have happened if you tried?",
-  "If you could go back to one moment in college and say what you were too afraid to say, would it change everything—or nothing at all?",
+  "If you could go back to one moment in college and say what you were too afraid to say, would it change everything�or nothing at all?",
   "Are some regrets meant to stay with us so we grow, or are they just reminders of chances we were too scared to take?",
   "How many important moments in life pass quietly because we assumed there would always be another chance?",
-  "When you think about your biggest regret, is it about something you did—or something you never had the courage to do?",
-  "Are you actually unhappy right now, or just comparing your life to someone else’s highlight reel?",
-  "Why do we sometimes only recognize the happiest moments of our lives after they’re already gone?",
+  "When you think about your biggest regret, is it about something you did�or something you never had the courage to do?",
+  "Are you actually unhappy right now, or just comparing your life to someone else�s highlight reel?",
+  "Why do we sometimes only recognize the happiest moments of our lives after they�re already gone?",
   "If you suddenly lost everything you currently take for granted, how much of your life would you realize was already good?",
   "Is happiness something we build over time, or something we accidentally overlook while chasing bigger goals?",
-  "Are we truly living our college years—or just surviving them until something better comes?",
+  "Are we truly living our college years�or just surviving them until something better comes?",
   "Why can someone feel deeply lonely even when surrounded by classmates, friends, and people every day?",
-  "Do people change in college because they discover who they are—or because they feel pressure to become someone new?",
+  "Do people change in college because they discover who they are�or because they feel pressure to become someone new?",
   "How many friendships are real connections, and how many are just shared convenience and proximity?",
   "If everyone around you suddenly disappeared tomorrow, would you still know who you are without them?",
-  "Are we afraid of being alone—or afraid of discovering what we feel when we finally are?",
+  "Are we afraid of being alone�or afraid of discovering what we feel when we finally are?",
   "If the people you care about knew your deepest thoughts, would they see you the same way?",
   "How many opportunities in your life disappeared simply because you hesitated?",
   "Are you chasing the life you actually want, or the life you think you're supposed to want?",
   "If you stopped trying so hard to prove yourself, would anyone notice?",
   "Are you afraid of failing, or afraid of discovering you never truly tried?",
   "How many people in your life truly know the real version of you?",
-  "Are the goals you're chasing yours—or expectations you inherited from others?",
+  "Are the goals you're chasing yours�or expectations you inherited from others?",
   "If everything stayed exactly the same for the next five years, would you be satisfied with where you are?",
   "Are you becoming the person your younger self hoped you'd be?",
   "How much of your life is built on choices you made, and how much is built on choices you avoided?",
@@ -40,32 +40,32 @@ const PhilosophicalQuestions = [
   "If you could see the path your life will take, would it comfort you or scare you?",
   "Do people really change, or do they just get better at hiding who they've always been?",
   "How much of your personality is real, and how much is a defense mechanism?",
-  "If your life were a story, would you admire the character you’ve become?",
-  "Are you afraid of being alone—or afraid of what you’ll realize when you are?",
+  "If your life were a story, would you admire the character you�ve become?",
+  "Are you afraid of being alone�or afraid of what you�ll realize when you are?",
   "When was the last time you felt truly understood by someone?",
   "Did you actually lose them, or did you lose the version of the future you imagined with them?",
   "If someone truly loved you, would they ever leave you questioning where you stand?",
   "When someone stops choosing you, is it harder to accept the loss or the rejection?",
   "Are situationships confusing because feelings are complicated, or because honesty is missing?",
   "Did they love you, or did they just love how you made them feel?",
-  "If someone came back into your life right now, would you welcome them—or just reopen an old wound?",
+  "If someone came back into your life right now, would you welcome them�or just reopen an old wound?",
   "How do you know when it's time to let someone go, even if you still care about them?",
   "Are we sometimes more attached to memories than to the actual person?",
-  "When someone moves on quickly after a breakup, does it mean they cared less—or just healed differently?",
+  "When someone moves on quickly after a breakup, does it mean they cared less�or just healed differently?",
   "Do people fall out of love suddenly, or slowly stop choosing each other?",
-  "If you had another chance with someone you loved, would it end differently—or the same way?",
+  "If you had another chance with someone you loved, would it end differently�or the same way?",
   "Was it really love, or just two lonely people finding comfort in each other?",
   "Why do we sometimes fight harder for people who treat us worse?",
-  "If someone doesn't see your worth, is the problem them—or the time you spent trying to prove it?",
+  "If someone doesn't see your worth, is the problem them�or the time you spent trying to prove it?",
   "Are we afraid of losing people, or afraid of feeling replaceable?",
   "Do we miss people themselves, or just the feeling of being important to them?",
   "If someone truly cared about you, would they make you feel like an option?",
-  "Are we heartbroken because the love ended—or because the story didn't finish the way we imagined?",
-  "Why do some people stay in our minds long after they’ve left our lives?",
+  "Are we heartbroken because the love ended�or because the story didn't finish the way we imagined?",
+  "Why do some people stay in our minds long after they�ve left our lives?",
   "If love requires effort from both people, why do so many relationships survive on one person trying harder?",
   "How much of your current path is something you chose, and how much is something you simply continued?",
   "If you removed everyone else's expectations, what kind of life would you actually want?",
-  "Are you building the life you want—or the life that feels safest?",
+  "Are you building the life you want�or the life that feels safest?",
   "What would you do differently if you weren't afraid of disappointing people?",
   "Are you growing into who you want to become, or drifting into whoever life turns you into?",
   "If your younger self saw you today, what would surprise them the most?",
@@ -78,23 +78,23 @@ const PhilosophicalQuestions = [
   "Are you trying to discover yourself, or trying to escape the version of yourself you don't like?",
   "What kind of person are you becoming through the choices you make every day?",
   "Are you proud of the habits that are shaping your future?",
-  "How many years of your life have been spent waiting for the “right time”?",
+  "How many years of your life have been spent waiting for the �right time�?",
   "Is success something you define for yourself, or something you inherited from society?",
   "What would your life look like if you stopped comparing your timeline to everyone else's?",
   "When people remember you years from now, what do you hope they remember most?",
   "If the next chapter of your life started tomorrow, what would you want it to look like?"
 ]
 
-const SHOW_DURATION = 10000  // 10 seconds visible
-const HIDE_DURATION = 20000  // 20 seconds hidden
+const SHOW_DURATION = 10000
+const HIDE_DURATION = 20000
 
 export function PhilosophicalAtom({ className = "w-8 h-8" }: { className?: string }) {
   const [message, setMessage] = useState<string | null>(null)
   const showTimerRef = useRef<NodeJS.Timeout | null>(null)
   const hideTimerRef = useRef<NodeJS.Timeout | null>(null)
   const lastIndexRef = useRef<number>(-1)
+  const scheduleCycleRef = useRef<() => void>(() => {})
 
-  // Pick a random question different from the last one shown
   const pickRandom = useCallback(() => {
     let idx: number
     do {
@@ -104,13 +104,11 @@ export function PhilosophicalAtom({ className = "w-8 h-8" }: { className?: strin
     return PhilosophicalQuestions[idx]
   }, [])
 
-  // Clear all pending timers
   const clearTimers = useCallback(() => {
     if (showTimerRef.current) clearTimeout(showTimerRef.current)
     if (hideTimerRef.current) clearTimeout(hideTimerRef.current)
   }, [])
 
-  // Schedule: show message → hide after SHOW_DURATION → wait HIDE_DURATION → repeat
   const scheduleCycle = useCallback(() => {
     clearTimers()
     const msg = pickRandom()
@@ -118,33 +116,36 @@ export function PhilosophicalAtom({ className = "w-8 h-8" }: { className?: strin
 
     hideTimerRef.current = setTimeout(() => {
       setMessage(null)
-      showTimerRef.current = setTimeout(scheduleCycle, HIDE_DURATION)
+      showTimerRef.current = setTimeout(() => {
+        scheduleCycleRef.current()
+      }, HIDE_DURATION)
     }, SHOW_DURATION)
-  }, [pickRandom, clearTimers])
+  }, [clearTimers, pickRandom])
 
-  // Auto-start: first message appears after initial HIDE_DURATION delay
   useEffect(() => {
-    showTimerRef.current = setTimeout(scheduleCycle, HIDE_DURATION)
-    return clearTimers
-  }, [scheduleCycle, clearTimers])
-
-  // Manual click: show immediately and restart the cycle from this point
-  const handleClick = useCallback(() => {
-    scheduleCycle()
+    scheduleCycleRef.current = scheduleCycle
   }, [scheduleCycle])
+
+  useEffect(() => {
+    showTimerRef.current = setTimeout(() => {
+      scheduleCycleRef.current()
+    }, HIDE_DURATION)
+    return clearTimers
+  }, [clearTimers])
+
+  const handleClick = useCallback(() => {
+    scheduleCycleRef.current()
+  }, [])
 
   return (
     <div className="relative flex items-center justify-center">
-      {/* Speech Bubble */}
       {message && (
         <div className="absolute top-[140%] left-1/2 -translate-x-1/2 w-[300px] sm:w-[340px] rounded-xl bg-foreground/95 backdrop-blur-sm px-4 py-3.5 text-[11px] sm:text-xs leading-relaxed font-medium text-background shadow-xl animate-in fade-in slide-in-from-top-2 z-[60] text-center text-balance transition-all hover:bg-foreground hover:scale-105 duration-300">
           {message}
-          {/* Arrow pointing up */}
           <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 h-3 w-3 rotate-45 bg-foreground/95" />
         </div>
       )}
 
-      {/* Atom Toggle */}
       <button
         type="button"
         onClick={handleClick}
