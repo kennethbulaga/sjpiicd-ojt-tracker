@@ -1,88 +1,85 @@
-# JP Track — SJPIICD OJT Tracker
+# JP Track
 
-A centralized personal tool for **St. John Paul II College of Davao** (SJPIICD) students to track their CHED-mandated OJT hours with maximum flexibility and zero friction.
+<p align="center">
+	<img src="public/sjpiicd-logo.png" alt="SJPIICD Logo" width="84" />
+</p>
+
+JP Track is a production-ready OJT tracking web app for St. John Paul II College of Davao students. It provides a complete workflow for logging internship sessions, monitoring hour progress, and preparing DTR-ready history records.
 
 ![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)
+![React](https://img.shields.io/badge/React-19-149ECA?logo=react)
 ![TypeScript](https://img.shields.io/badge/TypeScript-Strict-blue?logo=typescript)
 ![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-3FCF8E?logo=supabase)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-38BDF8?logo=tailwindcss)
 
-## Overview
+## Product Highlights
 
-JP Track helps 4th-year OJT students track their required hours (e.g., 486 hours for BSIT) through a clean, mobile-first interface. Students can rapidly log hours via a timesheet form or a live start/stop timer, visualize progress through a dashboard ring, and export their DTR history for school submission.
+- Secure SJPIICD-first access with Google OAuth and Supabase session handling
+- Dashboard with progress ring, statistics cards, and activity calendar
+- Quick Log flow with smart defaults, validation, and same-day entry visibility
+- Recent entries stream with delete actions and server-backed consistency
+- DTR history table with filtering, grouping, and export actions
+- Settings and onboarding flows with strict validation and required profile fields
+- Mobile-first responsive shell with bottom navigation and desktop sidebar
 
-### Planned Features
+## Experience Overview
 
-- **Dashboard Progress Ring** — Visual tracker showing hours completed vs. remaining
-- **Quick Log (Timesheet Mode)** — Calendar-based rapid entry with smart defaults (8AM–12PM, 1PM–5PM)
-- **Live Tracker** — Start/stop timer for real-time hour logging
-- **DTR History** — Paginated table with CSV export for school submission
-- **Dark Mode** — Class-based toggle with system preference detection
-- **SJPIICD-Only Access** — Google OAuth restricted to `@sjp2cd.edu.ph` email domain
+### Dashboard
+- Hour completion and remaining goals with estimated finish date logic
+- Business-day progress cues and daily activity visualization
 
-## Tech Stack
+### Log Hours
+- Date-driven logging with validated session windows and chronology checks
+- Realtime-aware daily entry list scoped to the active user/date
+- URL-synced date state for consistent navigation and refresh behavior
 
-| Layer | Technology |
-|-------|-----------|
-| Framework | [Next.js 16](https://nextjs.org) (App Router) |
-| Language | TypeScript (strict mode) |
-| Database | [Supabase](https://supabase.com) PostgreSQL |
-| Auth | Supabase Auth via `@supabase/ssr` (cookie-based) |
-| Styling | [Tailwind CSS v4](https://tailwindcss.com) (CSS-first, OKLCH tokens) |
-| Components | [shadcn/ui](https://ui.shadcn.com) + Lucide React |
-| Forms | React Hook Form + Zod |
-| State | Zustand (UI state only) |
-| Time | date-fns |
+### History
+- Server-fetched history with searchable/filterable records
+- Export-ready actions for DTR workflows
 
-## Architecture Decisions
+### Settings & Onboarding
+- Program/company profile capture with required company enforcement
+- Typed server actions and schema-first validation boundaries
 
-- **Server Components by default** — Client Components only for interactive elements
-- **Server Actions for mutations** — No API route handlers except OAuth callback
-- **Zod as single source of truth** — Types inferred via `z.infer<>`; no duplicate definitions
-- **Mobile-first design** — `dvh` viewport units, 44px touch targets, bottom nav on mobile
-- **Feature-based folder structure** — Components organized by feature, not by type
+## Architecture (Current Canonical)
 
-## Project Structure
+The codebase follows a server-first Next.js 16 App Router pattern with route-private colocation.
 
-```
+```text
 src/
-├── app/                        # Next.js App Router
-│   ├── (auth)/                 # Auth route group (login)
-│   ├── (dashboard)/            # Dashboard route group
-│   │   ├── dashboard/          # Progress ring + stats
-│   │   ├── log/                # Quick Log & Live Tracker
-│   │   ├── history/            # DTR history table
-│   │   └── settings/           # Profile & target hours
-│   └── api/auth/callback/      # OAuth code exchange
-├── actions/                    # Server Actions (mutations)
+├── app/
+│   ├── (dashboard)/
+│   │   ├── dashboard/_components/*   # canonical dashboard route components
+│   │   └── log/_components/*         # canonical log route components
+│   └── api/auth/callback/
+├── actions/                          # server actions
 ├── components/
-│   ├── ui/                     # shadcn/ui primitives
-│   ├── dashboard/              # ProgressRing, StatsCards
-│   ├── time-entry/             # QuickLogForm, LiveTracker
-│   ├── history/                # DTRTable, ExportActions
-│   ├── auth/                   # GoogleSignInButton
-│   └── layout/                 # Header, Sidebar, BottomNav, ThemeToggle
-├── hooks/                      # Custom React hooks
+│   ├── ui/                           # global shadcn/ui primitives
+│   └── layout/                       # shared layout shell components
 ├── lib/
-│   ├── supabase/               # Server/client/middleware clients
-│   ├── validations/            # Zod schemas
-│   ├── constants.ts            # Target hours, time constraints
-│   └── utils.ts                # cn() utility
-├── stores/                     # Zustand (UI state only)
-├── types/                      # TypeScript types
-└── proxy.ts                    # Auth guard + session refresh (Next.js 16 proxy convention)
+│   ├── supabase/
+│   └── validations/
+└── proxy.ts
 ```
 
-## Validation Rules
+## Engineering Standards Applied
 
-| Rule | Constraint |
-|------|-----------|
-| Time window | 7:00 AM – 9:00 PM only |
-| Chronology | `time_out` must be after `time_in` |
-| Daily max | 12 hours per day |
-| Overlaps | Block or merge overlapping sessions |
-| Session types | Morning · Afternoon · Overtime |
+- Next.js 16 + React 19 + TypeScript strict mode
+- Server Components by default; Client Components only for interactivity
+- Server Actions for mutations and route revalidation
+- Zod-based validation contracts with inferred types
+- Tailwind CSS v4 + shadcn/ui + cva wrapper composition
+- Import-boundary lint rules to prevent deprecated architectural paths
+
+## Quality Status
+
+> [!NOTE]
+> The repository has been migrated to route-colocated canonical components and validated with build, lint, and automated tests.
+
+- Production build: successful
+- Lint checks: passing
+- Test suite: passing (includes route smoke test and focused utility/component tests)
 
 ---
 
-Built by **Kenneth Bulaga** for SJPIICD OJT Students.
+Built by Kenneth Bulaga for the SJPIICD student community.
