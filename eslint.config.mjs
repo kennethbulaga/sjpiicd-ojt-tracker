@@ -5,6 +5,34 @@ import nextTs from "eslint-config-next/typescript";
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
+  {
+    files: ["src/**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["@/components/dashboard/*"],
+              message:
+                "Import dashboard route components from src/app/(dashboard)/dashboard/_components instead of deprecated global paths.",
+            },
+            {
+              group: [
+                "@/components/time-entry/QuickLogForm",
+                "@/components/time-entry/DailyEntries",
+                "@/components/time-entry/RecentEntries",
+                "@/components/time-entry/SessionBadge",
+                "@/components/time-entry/shared",
+              ],
+              message:
+                "Import log route components from src/app/(dashboard)/log/_components or a neutral shared location instead of deprecated global time-entry paths.",
+            },
+          ],
+        },
+      ],
+    },
+  },
   // Override default ignores of eslint-config-next.
   globalIgnores([
     // Default ignores of eslint-config-next:

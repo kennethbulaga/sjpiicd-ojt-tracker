@@ -9,15 +9,19 @@ export function formatMinutes(totalMinutes: number): string {
 }
 
 export function formatTime(timeStr: string): string {
-  // timeStr is "HH:mm:ss" — parse and format to "h:mm a"
   const date = parse(timeStr, "HH:mm:ss", new Date())
   return format(date, "h:mm a")
 }
 
 export type SessionType = "Morning" | "Afternoon" | "Overtime"
 
-export const sessionBadgeVariant: Record<SessionType, "default" | "secondary" | "outline"> = {
-  Morning: "default",
-  Afternoon: "secondary", // Uniquely overridden by .badge-afternoon dynamically
-  Overtime: "outline",
+export interface TimeEntryListItem {
+  id: string
+  date_logged: string
+  time_in: string
+  time_out: string
+  session_type: SessionType
+  total_minutes: number
+  task_description: string | null
+  created_at: string
 }

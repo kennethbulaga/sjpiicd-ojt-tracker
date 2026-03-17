@@ -1,5 +1,3 @@
-"use client"
-
 import { cn } from "@/lib/utils"
 
 interface ProgressRingProps {
@@ -11,22 +9,17 @@ export function ProgressRing({ hoursCompleted, targetHours }: ProgressRingProps)
   const percentage = Math.min(100, (hoursCompleted / targetHours) * 100)
   const hoursRemaining = Math.max(0, targetHours - hoursCompleted)
 
-  // SVG circle math
-  const size = 192 // matches size-48
+  const size = 192
   const strokeWidth = 12
   const radius = (size - strokeWidth) / 2
   const circumference = 2 * Math.PI * radius
   const strokeDashoffset = circumference - (percentage / 100) * circumference
 
-  // Color changes based on progress
   const progressColor =
-    percentage >= 100
-      ? "stroke-green-500 dark:stroke-green-400"
-      : "stroke-primary"
+    percentage >= 100 ? "stroke-green-500 dark:stroke-green-400" : "stroke-primary"
 
   return (
     <div className="flex flex-col items-center gap-4">
-      {/* SVG Progress Ring */}
       <div className="relative">
         <svg
           width={size}
@@ -36,7 +29,6 @@ export function ProgressRing({ hoursCompleted, targetHours }: ProgressRingProps)
           aria-label={`${Math.round(percentage)}% OJT progress`}
           role="img"
         >
-          {/* Background track */}
           <circle
             cx={size / 2}
             cy={size / 2}
@@ -45,7 +37,6 @@ export function ProgressRing({ hoursCompleted, targetHours }: ProgressRingProps)
             strokeWidth={strokeWidth}
             className="stroke-muted"
           />
-          {/* Progress arc */}
           <circle
             cx={size / 2}
             cy={size / 2}
@@ -62,25 +53,18 @@ export function ProgressRing({ hoursCompleted, targetHours }: ProgressRingProps)
           />
         </svg>
 
-        {/* Center text overlay */}
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
           <p className="text-3xl font-bold tracking-tight">
             {percentage >= 100 ? "100" : Math.round(percentage)}%
           </p>
           <p className="text-sm text-muted-foreground">
-            {hoursRemaining > 0
-              ? `${Math.ceil(hoursRemaining)}h left`
-              : "Complete!"}
+            {hoursRemaining > 0 ? `${Math.ceil(hoursRemaining)}h left` : "Complete!"}
           </p>
         </div>
       </div>
 
-      {/* Hours label */}
       <p className="text-sm text-muted-foreground">
-        <span className="font-semibold text-foreground">
-          {Math.floor(hoursCompleted)}
-        </span>{" "}
-        / {targetHours} hours
+        <span className="font-semibold text-foreground">{Math.floor(hoursCompleted)}</span> / {targetHours} hours
       </p>
     </div>
   )

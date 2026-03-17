@@ -5,12 +5,12 @@ import { Building2 } from "lucide-react"
 
 import { createClient } from "@/lib/supabase/server"
 import { getPhilippineNow } from "@/lib/utils"
-import { ProgressRing } from "@/components/dashboard/ProgressRing"
-import { StatsCards } from "@/components/dashboard/StatsCards"
-import { ActivityCalendar } from "@/components/dashboard/ActivityCalendar"
-import { RecentEntries } from "@/components/time-entry/RecentEntries"
-import { FloatingActionButton } from "@/components/dashboard/FloatingActionButton"
 import { Button } from "@/components/ui/button"
+import { ActivityCalendar } from "./_components/activity-calendar"
+import { FloatingActionButton } from "./_components/floating-action-button"
+import { ProgressRing } from "./_components/progress-ring"
+import { StatsCards } from "./_components/stats-cards"
+import { RecentEntries } from "../log/_components/recent-entries"
 
 export const metadata = {
   title: "Dashboard — JP Track",
@@ -46,6 +46,7 @@ export default async function DashboardPage() {
 
   // Unique days with logs (for days-remaining calculation)
   const loggedDates = [...new Set(entries?.map((e) => e.date_logged).filter(Boolean) ?? [])]
+  const loggedDateObjects = loggedDates.map((dateValue) => new Date(`${dateValue}T00:00:00`))
   const uniqueDaysLogged = loggedDates.length
 
   // Get Philippine date/time for server-side calculations
@@ -122,7 +123,7 @@ export default async function DashboardPage() {
       </div>
 
       {/* Activity Calendar */}
-      <ActivityCalendar loggedDates={loggedDates} />
+      <ActivityCalendar loggedDates={loggedDateObjects} />
 
       {/* Recent Entries */}
       <Suspense
