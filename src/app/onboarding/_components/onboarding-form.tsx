@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/form"
 
 import { Separator } from "@/components/ui/separator"
-import { CompanyCombobox } from "@/components/settings/CompanyCombobox"
+import { CompanyCombobox } from "@/components/shared/company-combobox"
 
 import { completeOnboarding } from "@/actions/onboarding"
 import {
@@ -71,8 +71,6 @@ export function OnboardingForm({ userName }: OnboardingFormProps) {
       }
     })
   }
-
-
 
   const firstName = userName.split(" ")[0] || "Student"
 
@@ -193,7 +191,6 @@ export function OnboardingForm({ userName }: OnboardingFormProps) {
             </Button>
           </form>
         </Form>
-
       </CardContent>
     </Card>
   )

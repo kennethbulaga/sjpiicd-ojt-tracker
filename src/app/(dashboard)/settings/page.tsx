@@ -1,20 +1,20 @@
-import { redirect } from "next/navigation"
+import { redirect } from "next/navigation";
 
-import { createClient } from "@/lib/supabase/server"
-import { SettingsForm } from "@/components/settings/SettingsForm"
+import { createClient } from "@/lib/supabase/server";
+import { SettingsForm } from "./_components/settings-form";
 
 export const metadata = {
   title: "Settings — JP Track",
-}
+};
 
 export default async function SettingsPage() {
-  const supabase = await createClient()
+  const supabase = await createClient();
   const {
     data: { user },
-  } = await supabase.auth.getUser()
+  } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect("/")
+    redirect("/");
   }
 
   // Fetch the user's current profile from the database
@@ -22,7 +22,7 @@ export default async function SettingsPage() {
     .from("users")
     .select("full_name, nickname, program, company_name, target_hours")
     .eq("id", user.id)
-    .single()
+    .single();
 
   // Build default values from DB profile, falling back to auth metadata
   const defaultValues = {
@@ -36,7 +36,7 @@ export default async function SettingsPage() {
     company_name: profile?.company_name ?? null,
     target_hours: profile?.target_hours ?? 486,
     email: user.email ?? "",
-  }
+  };
 
   return (
     <div className="mx-auto max-w-2xl space-y-6 p-4 md:p-6 lg:p-8">
@@ -49,5 +49,5 @@ export default async function SettingsPage() {
 
       <SettingsForm defaultValues={defaultValues} />
     </div>
-  )
+  );
 }

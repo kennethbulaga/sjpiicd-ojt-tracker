@@ -28,6 +28,16 @@ const eslintConfig = defineConfig([
               message:
                 "Import log route components from src/app/(dashboard)/log/_components or a neutral shared location instead of deprecated global time-entry paths.",
             },
+            {
+              group: ["@/components/history/*"],
+              message:
+                "Import history route components from src/app/(dashboard)/history/_components instead of deprecated global paths.",
+            },
+            {
+              group: ["@/components/settings/*"],
+              message:
+                "Import settings route components from src/app/(dashboard)/settings/_components or src/components/shared instead of deprecated global paths.",
+            },
           ],
         },
       ],

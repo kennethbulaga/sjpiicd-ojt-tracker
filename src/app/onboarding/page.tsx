@@ -1,21 +1,21 @@
-import { redirect } from "next/navigation"
-import Image from "next/image"
-import { createClient } from "@/lib/supabase/server"
-import { OnboardingForm } from "@/components/auth/OnboardingForm"
-import { ThemeToggle } from "@/components/layout/ThemeToggle"
+import { redirect } from "next/navigation";
+import Image from "next/image";
+import { createClient } from "@/lib/supabase/server";
+import { OnboardingForm } from "./_components/onboarding-form";
+import { ThemeToggle } from "@/components/layout/ThemeToggle";
 
 export const metadata = {
   title: "Set Up Your Profile — JP Track",
-}
+};
 
 export default async function OnboardingPage() {
-  const supabase = await createClient()
+  const supabase = await createClient();
   const {
     data: { user },
-  } = await supabase.auth.getUser()
+  } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect("/")
+    redirect("/");
   }
 
   // Check if user already completed onboarding
@@ -23,16 +23,14 @@ export default async function OnboardingPage() {
     .from("users")
     .select("program")
     .eq("id", user.id)
-    .single()
+    .single();
 
   if (profile?.program && profile.program !== "") {
-    redirect("/dashboard")
+    redirect("/dashboard");
   }
 
   const userName =
-    user.user_metadata?.full_name ??
-    user.user_metadata?.name ??
-    "Student"
+    user.user_metadata?.full_name ?? user.user_metadata?.name ?? "Student";
 
   return (
     <div className="flex min-h-dvh flex-col items-center justify-center bg-muted/40 px-4 py-8">
@@ -57,5 +55,5 @@ export default async function OnboardingPage() {
         You can update these details anytime in Settings.
       </p>
     </div>
-  )
+  );
 }

@@ -1,46 +1,46 @@
-import { redirect } from "next/navigation"
-import { Suspense } from "react"
+import { redirect } from "next/navigation";
+import { Suspense } from "react";
 
-import { createClient } from "@/lib/supabase/server"
-import { DTRTable } from "@/components/history/DTRTable"
-import { ExportActions } from "@/components/history/ExportActions"
+import { createClient } from "@/lib/supabase/server";
+import { DTRTable } from "./_components/dtr-table";
+import { ExportActions } from "./_components/export-actions";
 
 export const metadata = {
   title: "DTR History — JP Track",
-}
+};
 
 export default async function HistoryPage() {
-  const supabase = await createClient()
+  const supabase = await createClient();
   const {
     data: { user },
-  } = await supabase.auth.getUser()
+  } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect("/")
+    redirect("/");
   }
 
   // Fetch all time entries for the current user, ordered by date descending
   const { data: entries, error } = await supabase
     .from("time_entries")
     .select(
-      "id, date_logged, time_in, time_out, total_minutes, session_type, task_description, created_at"
+      "id, date_logged, time_in, time_out, total_minutes, session_type, task_description, created_at",
     )
     .eq("user_id", user.id)
     .order("date_logged", { ascending: false })
-    .order("time_in", { ascending: false })
+    .order("time_in", { ascending: false });
 
   if (error) {
-    console.error("Error fetching time entries:", error)
+    console.error("Error fetching time entries:", error);
   }
 
-  const safeEntries = entries ?? []
+  const safeEntries = entries ?? [];
 
   // Calculate summary stats
   const totalMinutes = safeEntries.reduce(
     (sum, e) => sum + (e.total_minutes ?? 0),
-    0
-  )
-  const totalHours = totalMinutes / 60
+    0,
+  );
+  const totalHours = totalMinutes / 60;
 
   return (
     <div className="mx-auto max-w-5xl space-y-6 p-4 md:p-6 lg:p-8">
@@ -68,5 +68,5 @@ export default async function HistoryPage() {
         <DTRTable entries={safeEntries} />
       </Suspense>
     </div>
-  )
+  );
 }

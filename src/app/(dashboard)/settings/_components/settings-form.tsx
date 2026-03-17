@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/form"
 
 import { updateProfile } from "@/actions/profile"
-import { CompanyCombobox } from "@/components/settings/CompanyCombobox"
+import { CompanyCombobox } from "@/components/shared/company-combobox"
 import { profileSchema, type ProfileInput } from "@/lib/validations/profile"
 
 interface SettingsFormProps {
